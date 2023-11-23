@@ -54,11 +54,6 @@ namespace Game
 
             playerX = 0;
             playerY = 0;
-
-            Canvas.SetLeft(player, playerX * 30);
-            Canvas.SetTop(player, playerY * 30);
-
-            Canvas1.Children.Add(player);
         }
 
         //Генерируем карту + в конце добавляем игрока

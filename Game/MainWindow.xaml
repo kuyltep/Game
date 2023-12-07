@@ -1,22 +1,31 @@
-﻿<Window x:Class="Game.MainWindow"
-         WindowState="Maximized"
-
+﻿<Window x:Name="Window" x:Class="Game.MainWindow"
+        WindowState="Maximized"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Game"
         mc:Ignorable="d"
-        Title="BEPUNK" Height="1000px" Width="2000px" >
+        Title="BEPUNK" Width="2000px" Height="1000px"  Loaded="Window_Loaded" KeyDown="Window_KeyDown" >
     <Window.Background>
         <ImageBrush/>
     </Window.Background>
     <Grid>
-        <Canvas x:Name="Canvas1">
-            <Canvas.Background>
-                <ImageBrush ImageSource="/2.png"/>
-            </Canvas.Background>
-        </Canvas>
-
+        <Grid>
+            <Grid x:Name="PauseMenu" Visibility="Hidden" Background="#B2000000" Panel.ZIndex="3"/>
+            <Grid x:Name="PauseSettings" Visibility="Hidden" Background="#B2000000" Panel.ZIndex="3"/>
+            <Grid x:Name="Settings" Visibility="Hidden">
+                <Grid.Background>
+                    <ImageBrush ImageSource="/2.png"/>
+                </Grid.Background>
+            </Grid>
+            <Grid x:Name="Game" Visibility="Hidden" Background="White"/>
+            <Grid x:Name="MainMenu" >
+                <Grid.Background>
+                    <ImageBrush ImageSource="/2.png"/>
+                </Grid.Background>
+            </Grid>
+        </Grid>
     </Grid>
+
 </Window>

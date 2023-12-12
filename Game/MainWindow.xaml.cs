@@ -18,9 +18,15 @@ namespace Game
 
     public partial class MainWindow : Window
     {
+        public int heroHealth = 3;
+        public int heroArmor = 3;
+        public int left = 0;
+        public int top = 0;
         public bool isMusicOn = false;
         private MediaPlayer _mpBgr;
         private MediaPlayer _mpCurSound;
+        public Image hero = new Image();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,7 +51,7 @@ namespace Game
             Image first_image = new Image();
             BitmapImage first = new BitmapImage();
             first.BeginInit();
-            first.UriSource = new Uri("first-punk.png", UriKind.Relative);
+            first.UriSource = new Uri("images/first-punk.png", UriKind.Relative);
             first.EndInit();
             first_image.Source = first;
             first_image.Width = 180;
@@ -58,7 +64,7 @@ namespace Game
             Image second_image = new Image();
             BitmapImage second = new BitmapImage();
             second.BeginInit();
-            second.UriSource = new Uri("second-punk.jpg", UriKind.Relative);
+            second.UriSource = new Uri("images/second-punk.jpg", UriKind.Relative);
             second.EndInit();
             second_image.Source = second;
             second_image.Width = 180;
@@ -154,11 +160,82 @@ namespace Game
             backToMainWindow.Margin = new Thickness(0, 150, 0, 0);
             Settings.Children.Add(backToMainWindow);
         }
+
+        //
+        public void InitializeGame()
+        {
+            BitmapImage img = new BitmapImage();
+            img.BeginInit();
+            img.UriSource = new Uri("images/hero.png", UriKind.Relative);
+            img.EndInit();
+            hero.Source = img;
+            hero.Height = 20;
+            hero.Width = 20;
+            hero.VerticalAlignment = VerticalAlignment.Center;
+            hero.HorizontalAlignment = HorizontalAlignment.Center;
+            GameCanvas.Children.Add(hero);
+
+            HeroHealthAndArmor();
+        }
+        //Hero health and Hero armor
+        public void HeroHealthAndArmor()
+        {
+            Image health = new Image();
+            BitmapImage healthImage = new BitmapImage();
+            healthImage.BeginInit();
+            healthImage.UriSource = new Uri($"images/hp/{heroHealth}hp.png", UriKind.Relative);
+            healthImage.EndInit();
+            health.Source = healthImage;
+            health.Height = 10;
+            health.VerticalAlignment = VerticalAlignment.Bottom;
+            health.HorizontalAlignment = HorizontalAlignment.Right;
+            health.Margin = new Thickness(0, 0, 0, -10);
+            GameCanvas.Children.Add(health);
+
+            Image armor = new Image();
+            BitmapImage armorImage = new BitmapImage();
+            armorImage.BeginInit();
+            armorImage.UriSource = new Uri($"images/armor/{heroArmor}arm.png", UriKind.Relative);
+            armorImage.EndInit();
+            armor.Source = armorImage;
+            armor.Height = 10;
+            armor.VerticalAlignment = VerticalAlignment.Bottom;
+            armor.HorizontalAlignment = HorizontalAlignment.Right;
+            armor.Margin = new Thickness(0, 0, 0, -20);
+            GameCanvas.Children.Add(armor);
+        }
+        //Hero Move
+        public void HeroMove(KeyEventArgs e)
+        {
+            int step = 3;
+
+            if(e.Key.ToString() == "W" && GameCanvas.Margin.Top > 0)
+            {
+                GameCanvas.Margin = new Thickness(left, top -= step, 0, 0);
+            }else if(e.Key.ToString() == "S" && GameCanvas.Margin.Top + GameCanvas.Height < Game.ActualHeight)
+            {
+                GameCanvas.Margin = new Thickness(left, top += step, 0, 0);
+
+            }
+            else if( e.Key.ToString() == "A" && GameCanvas.Margin.Left > 0)
+            {
+                GameCanvas.Margin = new Thickness(left -= step, top, 0, 0);
+
+            }
+            else if(e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.Width < Game.ActualWidth)
+            {
+                GameCanvas.Margin = new Thickness(left += step, top, 0, 0);
+
+            }
+        }
+
         //Обработчик для кнопки начать игру в главном меню
         private void play_Click(object sender, RoutedEventArgs e)
         {
             MainMenu.Visibility = Visibility.Hidden;
             Game.Visibility = Visibility.Visible;
+            GameCanvas.Visibility = Visibility.Visible;
+            InitializeGame();
         }
         //Обработчик для кнопки настройки в главном меню
         private void settings_Click(object sender, RoutedEventArgs e)
@@ -312,6 +389,7 @@ namespace Game
         private void exitPauseMenu_Click(Object sender, RoutedEventArgs e)
         {
             PauseMenu.Visibility = Visibility.Hidden;
+            Game.Children.Clear();
             MainMenu.Visibility=Visibility.Visible;
 
         }
@@ -337,7 +415,13 @@ namespace Game
                 PauseMenu.Visibility = Visibility.Visible;
                 }
             }
+            if (Game.Visibility == Visibility.Visible)
+            {
+                HeroMove(e);
+            }
         }
+
+  
     }
     
   

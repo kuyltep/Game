@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
+using System.Windows.Media.Media3D;
 
 namespace Game
 {
@@ -63,37 +64,121 @@ namespace Game
                 int roomX = rand.Next(0, MapWidth - roomWidth);// X
                 int roomY = rand.Next(0, MapHeight - roomHeight);// Y
 
-                for (int x = roomX; x < roomX + roomWidth; x++)// Рисуем стены
+                switch (rand.Next(1, 4))
                 {
-                    DrawTile(x, roomY, new SolidColorBrush(Colors.LightGray));// Граница верхняя
-                    DrawTile(x, roomY + roomHeight - 1, new SolidColorBrush(Colors.LightGray));// Граница нижняя
-                    DrawTile(x, roomY + roomHeight, new SolidColorBrush(Colors.Gray));// Дополнительный слой тайлов под нижней границей
+                    case 1:
+                        DrawRectangularRoom(roomX, roomY, roomWidth, roomHeight);
+                        break;
+                    case 2:
+                        DrawRectangularRoom2(roomX, roomY, roomWidth, roomHeight);
+                        break;
+                    case 3:
+                        DrawRectangularRoom3(roomX, roomY, roomWidth, roomHeight);
+                        break;
+                }
+            }
+
+            void DrawRectangularRoom(int x, int y, int width, int height)
+            {
+                for (int i = x; i < x + width; i++)
+                {
+                    DrawTile(i, y, new SolidColorBrush(Colors.LightGray));// Граница верхняя
+                    DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightGray));// Граница нижняя
+                    DrawTile(i, y + height, new SolidColorBrush(Colors.Gray));// Дополнительный слой тайлов под нижней границей
                 }
 
-                for (int y = roomY; y < roomY + roomHeight; y++)
+                for (int j = y; j < y + height; j++)
                 {
-                    DrawTile(roomX, y, new SolidColorBrush(Colors.LightGray));// Граница левая
-                    DrawTile(roomX + roomWidth - 1, y, new SolidColorBrush(Colors.LightGray));// Граница правая
+                    DrawTile(x, j, new SolidColorBrush(Colors.LightGray));// Граница левая
+                    DrawTile(x + width - 1, j, new SolidColorBrush(Colors.LightGray));// Граница правая
                 }
 
-                DrawTile(roomX, roomY, new SolidColorBrush(Colors.Gray));// Верхний левый угол
-                DrawTile(roomX + roomWidth - 1, roomY, new SolidColorBrush(Colors.Gray));// Верхний правый угол
-                DrawTile(roomX, roomY + roomHeight - 1, new SolidColorBrush(Colors.Gray));// Нижний левый угол
-                DrawTile(roomX + roomWidth - 1, roomY + roomHeight - 1, new SolidColorBrush(Colors.Gray));// Нижний правый угол
+                DrawTile(x, y, new SolidColorBrush(Colors.Gray));// Верхний левый угол
+                DrawTile(x + width - 1, y, new SolidColorBrush(Colors.Gray));// Верхний правый угол
+                DrawTile(x, y + height - 1, new SolidColorBrush(Colors.Gray));// Нижний левый угол
+                DrawTile(x + width - 1, y + height - 1, new SolidColorBrush(Colors.Gray));// Нижний правый угол
 
-                                                                       // Заполнить внутренности комнаты
-                for (int x = roomX + 1; x < roomX + roomWidth - 1; x++)// Цикл заполнения
+                for (int i = x + 1; i < x + width - 1; i++)// Заполнить внутренности комнаты
                 {
-                    for (int y = roomY + 1; y < roomY + roomHeight - 1; y++)
+                    for (int j = y + 1; j < y + height - 1; j++)
                     {
-                        if (y == roomY + 1)// Проверка верхней строчки
+                        if (j == y + 1)// Проверка верхней строчки
                         {
-                            // Цвет
-                            DrawTile(x, y, new SolidColorBrush(Colors.Gray));
+                            DrawTile(i, j, new SolidColorBrush(Colors.Gray));
                         }
                         else
                         {
-                            DrawTile(x, y, Brushes.Beige);// Пол
+                            DrawTile(i, j, Brushes.Beige);
+                        }
+                    }
+                }
+            }
+            void DrawRectangularRoom2(int x, int y, int width, int height)
+            {
+                for (int i = x; i < x + width; i++)
+                {
+                    DrawTile(i, y, new SolidColorBrush(Colors.LightBlue));
+                    DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightBlue));
+                    DrawTile(i, y + height, new SolidColorBrush(Colors.Blue));
+                }
+
+                for (int j = y; j < y + height; j++)
+                {
+                    DrawTile(x, j, new SolidColorBrush(Colors.LightBlue));
+                    DrawTile(x + width - 1, j, new SolidColorBrush(Colors.LightBlue));
+                }
+
+                DrawTile(x, y, new SolidColorBrush(Colors.Blue));
+                DrawTile(x + width - 1, y, new SolidColorBrush(Colors.Blue));
+                DrawTile(x, y + height - 1, new SolidColorBrush(Colors.Blue));
+                DrawTile(x + width - 1, y + height - 1, new SolidColorBrush(Colors.Blue));
+
+                for (int i = x + 1; i < x + width - 1; i++)
+                {
+                    for (int j = y + 1; j < y + height - 1; j++)
+                    {
+                        if (j == y + 1)
+                        {
+                            DrawTile(i, j, new SolidColorBrush(Colors.Blue));
+                        }
+                        else
+                        {
+                            DrawTile(i, j, Brushes.Beige);
+                        }
+                    }
+                }
+            }
+            void DrawRectangularRoom3(int x, int y, int width, int height)
+            {
+                for (int i = x; i < x + width; i++)
+                {
+                    DrawTile(i, y, new SolidColorBrush(Colors.LightGreen));
+                    DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightGreen));
+                    DrawTile(i, y + height, new SolidColorBrush(Colors.Green));
+                }
+
+                for (int j = y; j < y + height; j++)
+                {
+                    DrawTile(x, j, new SolidColorBrush(Colors.LightGreen));
+                    DrawTile(x + width - 1, j, new SolidColorBrush(Colors.LightGreen));
+                }
+
+                DrawTile(x, y, new SolidColorBrush(Colors.Green));
+                DrawTile(x + width - 1, y, new SolidColorBrush(Colors.Green));
+                DrawTile(x, y + height - 1, new SolidColorBrush(Colors.Green));
+                DrawTile(x + width - 1, y + height - 1, new SolidColorBrush(Colors.Green));
+
+                for (int i = x + 1; i < x + width - 1; i++)
+                {
+                    for (int j = y + 1; j < y + height - 1; j++)
+                    {
+                        if (j == y + 1)
+                        {
+                            DrawTile(i, j, new SolidColorBrush(Colors.Green));
+                        }
+                        else
+                        {
+                            DrawTile(i, j, Brushes.Beige);
                         }
                     }
                 }

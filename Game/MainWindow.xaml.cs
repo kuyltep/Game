@@ -46,21 +46,24 @@ namespace Game
             path.Data = combination;// Тут уже можно обращаться к фигурам как к единому елементу
 
 
-            path.Effect = new BlurEffect { Radius = 50 };// Размытие или мягкое освещение
+            path.Effect = new BlurEffect
+            {
+                Radius = 50 // Размытие или мягкое освещение
+            };
 
             path.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));// Прозрачность
 
-            gameCanvas.Children.Add(path);// Добавляем
+            lightCanvas.Children.Add(path);// Добавляем
         }
 
-        private void gameCanvas_MouseMove_1(object sender, MouseEventArgs e)
+        private void lightCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (circleGeometry != null)// Проверка переменной, чтобы не была равна нулю
             {
-                Point mousePosition = e.GetPosition(gameCanvas);// Позиция мыши
+                Point mousePosition = e.GetPosition(lightCanvas);// Позиция мыши
                 circleGeometry.Center = mousePosition;// Следование за мышью, центр круга = мышке
 
-                gameCanvas.InvalidateVisual();// Перерисовываем холст, чтобы обновить свет
+                lightCanvas.InvalidateVisual();// Перерисовываем холст, чтобы обновить свет
             }
         }
     }

@@ -21,49 +21,53 @@ namespace Game
         private const int MapWidth = ShareData.MapWidth;
         private const int MapHeight = ShareData.MapHeight;
         private const int TileSize = ShareData.TileSize;
-        private EllipseGeometry circleGeometry;// Круг для света нужна как глобальная, к ней будут обращения от факелов
+        private EllipseGeometry circleGeometry;
+        private RectangleGeometry lightRectangleGeometry;
         Generation generation = new Generation();
+
         public MainWindow()
         {
-            InitializeComponent();// Основной залетает
-            generation.GenerateMap(gameCanvas);// Генерация карты
-            Light();// Освещение
+            InitializeComponent();
+            generation.GenerateMap(gameCanvas);
+            Light();
         }
 
-        private void Light()//Свет
+        private void Light()
         {
-            RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));// Это полупрозрачный темный слой aka ночь
+            RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
 
-            circleGeometry = new EllipseGeometry(new Point(50, 50), 40, 40);// Геометрия для круга
+            circleGeometry = new EllipseGeometry(new Point(50, 50), 40, 40);
+            lightRectangleGeometry = new RectangleGeometry(new Rect(0, 0, 100, 100)); // Прямоугольник для факела
 
-            GeometryGroup combination = new GeometryGroup();// Это нужно для объединения двух геометрических фигур
-            combination.Children.Add(squareGeometry);// Эти 2 строчки нужны , чтобы в группу добавить объекты
+            GeometryGroup combination = new GeometryGroup();
+            combination.Children.Add(squareGeometry);
             combination.Children.Add(circleGeometry);
+            combination.Children.Add(lightRectangleGeometry); // Добавляем прямоугольник в группу
 
-            combination.FillRule = FillRule.EvenOdd;//https://learn.microsoft.com/ru-ru/dotnet/maui/user-interface/controls/shapes/fillrules?view=net-maui-8.0
+            combination.FillRule = FillRule.EvenOdd;
 
             Path path = new Path();
-            path.Data = combination;// Тут уже можно обращаться к фигурам как к единому елементу
-
+            path.Data = combination;
 
             path.Effect = new BlurEffect
             {
-                Radius = 50 // Размытие или мягкое освещение
+                Radius = 50
             };
 
-            path.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));// Прозрачность
+            path.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
 
-            lightCanvas.Children.Add(path);// Добавляем
+            lightCanvas.Children.Add(path);
         }
 
         private void lightCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (circleGeometry != null)// Проверка переменной, чтобы не была равна нулю
+            if (circleGeometry != null && lightRectangleGeometry != null)
             {
-                Point mousePosition = e.GetPosition(lightCanvas);// Позиция мыши
-                circleGeometry.Center = mousePosition;// Следование за мышью, центр круга = мышке
+                Point mousePosition = e.GetPosition(lightCanvas);
+                circleGeometry.Center = mousePosition;
+                lightRectangleGeometry.Rect = new Rect(mousePosition.X - 50, mousePosition.Y - 50, 100, 100); // Обновляем положение прямоугольника
 
-                lightCanvas.InvalidateVisual();// Перерисовываем холст, чтобы обновить свет
+                lightCanvas.InvalidateVisual();
             }
         }
     }

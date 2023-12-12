@@ -22,7 +22,6 @@ namespace Game
         private const int MapHeight = ShareData.MapHeight;
         private const int TileSize = ShareData.TileSize;
         private EllipseGeometry circleGeometry;
-        private RectangleGeometry lightRectangleGeometry;
         Generation generation = new Generation();
 
         public MainWindow()
@@ -37,12 +36,10 @@ namespace Game
             RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
 
             circleGeometry = new EllipseGeometry(new Point(50, 50), 40, 40);
-            lightRectangleGeometry = new RectangleGeometry(new Rect(0, 0, 100, 100)); // Прямоугольник для факела
 
             GeometryGroup combination = new GeometryGroup();
             combination.Children.Add(squareGeometry);
             combination.Children.Add(circleGeometry);
-            combination.Children.Add(lightRectangleGeometry); // Добавляем прямоугольник в группу
 
             combination.FillRule = FillRule.EvenOdd;
 
@@ -61,11 +58,10 @@ namespace Game
 
         private void lightCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (circleGeometry != null && lightRectangleGeometry != null)
+            if (circleGeometry != null)
             {
                 Point mousePosition = e.GetPosition(lightCanvas);
                 circleGeometry.Center = mousePosition;
-                lightRectangleGeometry.Rect = new Rect(mousePosition.X - 50, mousePosition.Y - 50, 100, 100); // Обновляем положение прямоугольника
 
                 lightCanvas.InvalidateVisual();
             }

@@ -19,7 +19,7 @@ namespace Game
         public void GenerateMap(Canvas gameCanvas)// Стартуем
         {                                         // Генерация рандомных комнат
             Random rand = new Random();
-            int numRooms = rand.Next(10, 50);// Сколько комнат добавить?
+            int numRooms = rand.Next(10, 20);// Сколько комнат добавить?
             List<Point> roomCenters = new List<Point>();// Создает список точек для хранения центральных точек комнаты
 
 

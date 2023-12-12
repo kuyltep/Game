@@ -67,7 +67,7 @@ namespace Game
                 switch (rand.Next(1, 4))
                 {
                     case 1:
-                        DrawRectangularRoom(roomX, roomY, roomWidth, roomHeight);
+                        DrawRectangularRoom1(roomX, roomY, roomWidth, roomHeight);
                         break;
                     case 2:
                         DrawRectangularRoom2(roomX, roomY, roomWidth, roomHeight);
@@ -78,7 +78,7 @@ namespace Game
                 }
             }
 
-            void DrawRectangularRoom(int x, int y, int width, int height)
+            void DrawRectangularRoom1(int x, int y, int width, int height)
             {
                 for (int i = x; i < x + width; i++)
                 {

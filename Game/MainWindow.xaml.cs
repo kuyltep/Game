@@ -18,10 +18,12 @@ namespace Game
 
     public partial class MainWindow : Window
     {
-        public int heroHealth = 3;
-        public int heroArmor = 3;
-        public int left = 0;
-        public int top = 0;
+        public int heroHealth = 5;
+        public int heroArmor = 5;
+        public int canvasLeft = 0;
+        public int canvasTop = 0;
+        public int heroLeft = 0;
+        public int heroTop = 0;
         public bool isMusicOn = false;
         private MediaPlayer _mpBgr;
         private MediaPlayer _mpCurSound;
@@ -164,11 +166,8 @@ namespace Game
         //
         public void InitializeGame()
         {
-            BitmapImage img = new BitmapImage();
-            img.BeginInit();
-            img.UriSource = new Uri("images/hero.png", UriKind.Relative);
-            img.EndInit();
-            hero.Source = img;
+
+            HeroRightSide(hero);
             hero.Height = 20;
             hero.Width = 20;
             hero.VerticalAlignment = VerticalAlignment.Center;
@@ -177,6 +176,25 @@ namespace Game
 
             HeroHealthAndArmor();
         }
+        //Hero right side initialize
+        public void HeroRightSide(Image hero)
+        {
+            BitmapImage heroRightMove = new BitmapImage();
+            heroRightMove.BeginInit();
+            heroRightMove.UriSource = new Uri("images/heroRightSide.png", UriKind.Relative);
+            heroRightMove.EndInit();
+            hero.Source = heroRightMove;
+        }
+
+        public void HeroLeftSide(Image hero)
+        {
+            BitmapImage heroLeftMove = new BitmapImage();
+            heroLeftMove.BeginInit();
+            heroLeftMove.UriSource = new Uri("images/heroLeftSide.png", UriKind.Relative);
+            heroLeftMove.EndInit();
+            hero.Source = heroLeftMove;
+        }
+
         //Hero health and Hero armor
         public void HeroHealthAndArmor()
         {
@@ -209,23 +227,49 @@ namespace Game
         {
             int step = 3;
 
-            if(e.Key.ToString() == "W" && GameCanvas.Margin.Top > 0)
+            if(e.Key.ToString() == "W")
             {
-                GameCanvas.Margin = new Thickness(left, top -= step, 0, 0);
-            }else if(e.Key.ToString() == "S" && GameCanvas.Margin.Top + GameCanvas.Height < Game.ActualHeight)
-            {
-                GameCanvas.Margin = new Thickness(left, top += step, 0, 0);
+                //Для движения, если канвас столкнулся со стенкой, персонаж будет двигаться до границы канваса
+                if (GameCanvas.Margin.Top > 0)
+                {
+                GameCanvas.Margin = new Thickness(canvasLeft, canvasTop -= step, 0, 0);
 
+                }
+                else 
+                {
+                    if(hero.Margin.Top > -GameCanvas.ActualHeight / 2 - hero.Height)
+                    {
+
+                    hero.Margin = new Thickness(heroLeft, heroTop -= 5, 0, 0);
+                    }
+                }
+            }else if(e.Key.ToString() == "S"  )
+            {
+                //Для движения, если канвас столкнулся со стенкой, персонаж будет двигаться до границы канваса
+                if (GameCanvas.Margin.Top + GameCanvas.Height + 20 < Game.ActualHeight)
+                {
+
+                GameCanvas.Margin = new Thickness(canvasLeft, canvasTop += step, 0, 0);
+                }
+                else
+                {
+                    if (hero.Margin.Top < GameCanvas.ActualHeight / 2 + hero.Height)
+                    {
+
+                        hero.Margin = new Thickness(heroLeft, heroTop += 5, 0, 0);
+                    }
+                }
             }
             else if( e.Key.ToString() == "A" && GameCanvas.Margin.Left > 0)
             {
-                GameCanvas.Margin = new Thickness(left -= step, top, 0, 0);
+                GameCanvas.Margin = new Thickness(canvasLeft -= step, canvasTop, 0, 0);
+                HeroLeftSide(hero);
 
             }
             else if(e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.Width < Game.ActualWidth)
             {
-                GameCanvas.Margin = new Thickness(left += step, top, 0, 0);
-
+                GameCanvas.Margin = new Thickness(canvasLeft += step, canvasTop, 0, 0);
+                HeroRightSide(hero);
             }
         }
 

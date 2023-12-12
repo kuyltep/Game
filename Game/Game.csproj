@@ -125,7 +125,7 @@
     <Resource Include="images\second-punk.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="images\hero.png" />
+    <Resource Include="images\heroRightSide.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\armor\0arm.png" />
@@ -145,6 +145,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\heroLeftSide.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -24,24 +24,12 @@ namespace Game
         private EllipseGeometry circleGeometry;             // Круг для света нужна как глобальная, к ней будут обращения от факелов
 
 
-
-
-
-
         public MainWindow()
         {
             InitializeComponent();                          // Основной залетает
             GenerateMap();                                  // Генерация карты
             Light();                                        // Освещение
         }
-
-
-
-
-
-
-
-
 
 
         private void GenerateMap()                          // Стартуем
@@ -55,7 +43,7 @@ namespace Game
             {
                 for (int y = 0; y < MapHeight; y++)
                 {
-                    DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/10.png"))));
+                    DrawTile(x, y, new SolidColorBrush(Colors.Beige));
                 }
             }
             for (int i = 0; i < numRooms; i++)              // Комната
@@ -79,6 +67,7 @@ namespace Game
 
             }
 
+
             for (int i = 0; i < roomCenters.Count - 1; i++)
             {
                 ConnectRooms(roomCenters[i], roomCenters[i + 1]);
@@ -94,21 +83,21 @@ namespace Game
 
                 for (int x = roomX; x < roomX + roomWidth; x++)             // Рисуем стены
                 {
-                    DrawTile(x, roomY, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/5.png"))));                                   // Граница верхняя
-                    DrawTile(x, roomY + roomHeight - 1, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/8.png"))));                  // Граница нижняя
-                    DrawTile(x, roomY + roomHeight, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/9.png"))));                      // Дополнительный слой тайлов под нижней границей
+                    DrawTile(x, roomY, new SolidColorBrush(Colors.LightGray));                                   // Граница верхняя
+                    DrawTile(x, roomY + roomHeight - 1, new SolidColorBrush(Colors.LightGray));                  // Граница нижняя
+                    DrawTile(x, roomY + roomHeight, new SolidColorBrush(Colors.Gray));                      // Дополнительный слой тайлов под нижней границей
                 }
 
                 for (int y = roomY; y < roomY + roomHeight; y++)
                 {
-                    DrawTile(roomX, y, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/6.png"))));                                   // Граница левая
-                    DrawTile(roomX + roomWidth - 1, y, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/7.png"))));                   // Граница правая
+                    DrawTile(roomX, y, new SolidColorBrush(Colors.LightGray));                                   // Граница левая
+                    DrawTile(roomX + roomWidth - 1, y, new SolidColorBrush(Colors.LightGray));                   // Граница правая
                 }
 
-                DrawTile(roomX, roomY, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/1.png"))));                                   // Верхний левый угол
-                DrawTile(roomX + roomWidth - 1, roomY, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/2.png"))));                   // Верхний правый угол
-                DrawTile(roomX, roomY + roomHeight - 1, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/4.png"))));                  // Нижний левый угол
-                DrawTile(roomX + roomWidth - 1, roomY + roomHeight - 1, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/3.png"))));  // Нижний правый угол
+                DrawTile(roomX, roomY, new SolidColorBrush(Colors.Gray));                                   // Верхний левый угол
+                DrawTile(roomX + roomWidth - 1, roomY, new SolidColorBrush(Colors.Gray));                   // Верхний правый угол
+                DrawTile(roomX, roomY + roomHeight - 1, new SolidColorBrush(Colors.Gray));                  // Нижний левый угол
+                DrawTile(roomX + roomWidth - 1, roomY + roomHeight - 1, new SolidColorBrush(Colors.Gray));  // Нижний правый угол
 
                 // Заполнить внутренности комнаты
                 for (int x = roomX + 1; x < roomX + roomWidth - 1; x++)         // Цикл заполнения
@@ -118,7 +107,7 @@ namespace Game
                         if (y == roomY + 1)                                     // Проверка верхней строчки
                         {
                             // Цвет
-                            DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/9.png"))));
+                            DrawTile(x, y, new SolidColorBrush(Colors.Gray));
                         }
                         else
                         {
@@ -129,6 +118,7 @@ namespace Game
             }
         }
 
+
         private void ConnectRooms(Point start, Point end)                       // После создания всех комнат соединяем их дорогами
         {
             int x = (int)start.X;
@@ -136,13 +126,13 @@ namespace Game
 
             while (x != end.X)
             {
-                DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/15.png")))); // Горизонтальная дорожка
+                DrawTile(x, y, new SolidColorBrush(Colors.DarkGray)); // Горизонтальная дорожка
                 x += (int)Math.Sign(end.X - start.X);
             }
 
             while (y != end.Y)
             {
-                DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("D:/WpfApp6/Image/Walls/15.png")))); // Вертикальная дорожка
+                DrawTile(x, y, new SolidColorBrush(Colors.DarkGray)); // Вертикальная дорожка
                 y += (int)Math.Sign(end.Y - start.Y);
             }
         }
@@ -161,20 +151,6 @@ namespace Game
 
             gameCanvas.Children.Add(tile);          // =)
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         private void Light()                                                                                                                    //Свет
@@ -200,7 +176,8 @@ namespace Game
             gameCanvas.Children.Add(path);                                                                                                      // Добавляем
         }
 
-        private void gameCanvas_MouseMove(object sender, MouseEventArgs e)
+
+        private void gameCanvas_MouseMove_1(object sender, MouseEventArgs e)
         {
             if (circleGeometry != null)                                                                                                         // Проверка переменной, чтобы не была равна нулю
             {

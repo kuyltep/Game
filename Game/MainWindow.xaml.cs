@@ -35,6 +35,8 @@ namespace Game
 
 
         }
+        InitializeImagesOnMainMenu InitializeImagesClass = new InitializeImagesOnMainMenu();
+
         //Класс для инициализации плеера для музыки
         public void InitializeMediaPlayer()
         {
@@ -46,36 +48,7 @@ namespace Game
             isMusicOn = true;
             //_mpBgr.Position = TimeSpan.FromMinutes(11.45);
         }
-        //Класс для инициализации изображений на грид
-        public void InitializeImages()
-        {
-            //Initialize first image
-            Image first_image = new Image();
-            BitmapImage first = new BitmapImage();
-            first.BeginInit();
-            first.UriSource = new Uri("images/first-punk.png", UriKind.Relative);
-            first.EndInit();
-            first_image.Source = first;
-            first_image.Width = 180;
-            first_image.Height = 180;
-            first_image.VerticalAlignment = VerticalAlignment.Bottom;
-            first_image.HorizontalAlignment = HorizontalAlignment.Left;
-            MainMenu.Children.Add(first_image);
 
-            //Initialize second image
-            Image second_image = new Image();
-            BitmapImage second = new BitmapImage();
-            second.BeginInit();
-            second.UriSource = new Uri("images/second-punk.jpg", UriKind.Relative);
-            second.EndInit();
-            second_image.Source = second;
-            second_image.Width = 180;
-            second_image.Height = 180;
-            second_image.VerticalAlignment = VerticalAlignment.Top;
-            second_image.HorizontalAlignment = HorizontalAlignment.Right;
-            MainMenu.Children.Add(second_image);
-
-        }
         //Класс для инициализации кнопок главного меню на грид
         public void InitializeMainButtons()
         {
@@ -172,6 +145,7 @@ namespace Game
             hero.Width = 20;
             hero.VerticalAlignment = VerticalAlignment.Center;
             hero.HorizontalAlignment = HorizontalAlignment.Center;
+            hero.Margin = new Thickness(0, 0, 0, 0);
             GameCanvas.Children.Add(hero);
 
             HeroHealthAndArmor();
@@ -227,46 +201,21 @@ namespace Game
         {
             int step = 3;
 
-            if(e.Key.ToString() == "W")
+            if(e.Key.ToString() == "W" && GameCanvas.Margin.Top > -GameCanvas.ActualHeight / 2 + hero.Height / 2)
             {
-                //Для движения, если канвас столкнулся со стенкой, персонаж будет двигаться до границы канваса
-                if (GameCanvas.Margin.Top > 0)
-                {
                 GameCanvas.Margin = new Thickness(canvasLeft, canvasTop -= step, 0, 0);
-
-                }
-                else 
-                {
-                    if(hero.Margin.Top > -GameCanvas.ActualHeight / 2 - hero.Height)
-                    {
-
-                    hero.Margin = new Thickness(heroLeft, heroTop -= 5, 0, 0);
-                    }
-                }
-            }else if(e.Key.ToString() == "S"  )
+            }else if(e.Key.ToString() == "S" && GameCanvas.Margin.Top + GameCanvas.Height + 20 < Game.ActualHeight + GameCanvas.ActualHeight / 2 + hero.Height / 2)
             {
-                //Для движения, если канвас столкнулся со стенкой, персонаж будет двигаться до границы канваса
-                if (GameCanvas.Margin.Top + GameCanvas.Height + 20 < Game.ActualHeight)
-                {
-
                 GameCanvas.Margin = new Thickness(canvasLeft, canvasTop += step, 0, 0);
-                }
-                else
-                {
-                    if (hero.Margin.Top < GameCanvas.ActualHeight / 2 + hero.Height)
-                    {
-
-                        hero.Margin = new Thickness(heroLeft, heroTop += 5, 0, 0);
-                    }
-                }
+                
             }
-            else if( e.Key.ToString() == "A" && GameCanvas.Margin.Left > 0)
+            else if( e.Key.ToString() == "A" && GameCanvas.Margin.Left > -GameCanvas.ActualWidth / 2 + hero.Width / 2 )
             {
                 GameCanvas.Margin = new Thickness(canvasLeft -= step, canvasTop, 0, 0);
                 HeroLeftSide(hero);
 
             }
-            else if(e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.Width < Game.ActualWidth)
+            else if(e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.ActualWidth < Game.ActualWidth + GameCanvas.ActualWidth / 2 - hero.Width / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft += step, canvasTop, 0, 0);
                 HeroRightSide(hero);
@@ -297,7 +246,7 @@ namespace Game
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             InitializeMediaPlayer();
-            InitializeImages();
+            InitializeImagesClass.InitializeImages(MainMenu);
             InitializeMainButtons();
         }
 

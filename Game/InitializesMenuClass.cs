@@ -9,9 +9,10 @@ using System.Windows.Media.Imaging;
 
 namespace Game
 {
-    internal class InitializeImagesOnMainMenu
+    internal class InitializesMenuClass
     {
-        Grid MainMenu { get; set; }
+    
+
         //Класс для инициализации изображений на грид
         public void InitializeImages(Grid MainMenu)
         {
@@ -42,5 +43,7 @@ namespace Game
             MainMenu.Children.Add(second_image);
 
         }
+
+
     }
 }

@@ -35,7 +35,8 @@ namespace Game
 
 
         }
-        InitializeImagesOnMainMenu InitializeImagesClass = new InitializeImagesOnMainMenu();
+        InitializesMenuClass InitializesMenu = new InitializesMenuClass();
+        ClassForPlayer ClassForPlayer = new ClassForPlayer();
 
         //Класс для инициализации плеера для музыки
         public void InitializeMediaPlayer()
@@ -136,91 +137,6 @@ namespace Game
             Settings.Children.Add(backToMainWindow);
         }
 
-        //
-        public void InitializeGame()
-        {
-
-            HeroRightSide(hero);
-            hero.Height = 20;
-            hero.Width = 20;
-            hero.VerticalAlignment = VerticalAlignment.Center;
-            hero.HorizontalAlignment = HorizontalAlignment.Center;
-            hero.Margin = new Thickness(0, 0, 0, 0);
-            GameCanvas.Children.Add(hero);
-
-            HeroHealthAndArmor();
-        }
-        //Hero right side initialize
-        public void HeroRightSide(Image hero)
-        {
-            BitmapImage heroRightMove = new BitmapImage();
-            heroRightMove.BeginInit();
-            heroRightMove.UriSource = new Uri("images/heroRightSide.png", UriKind.Relative);
-            heroRightMove.EndInit();
-            hero.Source = heroRightMove;
-        }
-
-        public void HeroLeftSide(Image hero)
-        {
-            BitmapImage heroLeftMove = new BitmapImage();
-            heroLeftMove.BeginInit();
-            heroLeftMove.UriSource = new Uri("images/heroLeftSide.png", UriKind.Relative);
-            heroLeftMove.EndInit();
-            hero.Source = heroLeftMove;
-        }
-
-        //Hero health and Hero armor
-        public void HeroHealthAndArmor()
-        {
-            Image health = new Image();
-            BitmapImage healthImage = new BitmapImage();
-            healthImage.BeginInit();
-            healthImage.UriSource = new Uri($"images/hp/{heroHealth}hp.png", UriKind.Relative);
-            healthImage.EndInit();
-            health.Source = healthImage;
-            health.Height = 10;
-            health.VerticalAlignment = VerticalAlignment.Bottom;
-            health.HorizontalAlignment = HorizontalAlignment.Right;
-            health.Margin = new Thickness(0, 0, 0, -10);
-            GameCanvas.Children.Add(health);
-
-            Image armor = new Image();
-            BitmapImage armorImage = new BitmapImage();
-            armorImage.BeginInit();
-            armorImage.UriSource = new Uri($"images/armor/{heroArmor}arm.png", UriKind.Relative);
-            armorImage.EndInit();
-            armor.Source = armorImage;
-            armor.Height = 10;
-            armor.VerticalAlignment = VerticalAlignment.Bottom;
-            armor.HorizontalAlignment = HorizontalAlignment.Right;
-            armor.Margin = new Thickness(0, 0, 0, -20);
-            GameCanvas.Children.Add(armor);
-        }
-        //Hero Move
-        public void HeroMove(KeyEventArgs e)
-        {
-            int step = 3;
-
-            if(e.Key.ToString() == "W" && GameCanvas.Margin.Top > -GameCanvas.ActualHeight / 2 + hero.Height / 2)
-            {
-                GameCanvas.Margin = new Thickness(canvasLeft, canvasTop -= step, 0, 0);
-            }else if(e.Key.ToString() == "S" && GameCanvas.Margin.Top + GameCanvas.Height + 20 < Game.ActualHeight + GameCanvas.ActualHeight / 2 + hero.Height / 2)
-            {
-                GameCanvas.Margin = new Thickness(canvasLeft, canvasTop += step, 0, 0);
-                
-            }
-            else if( e.Key.ToString() == "A" && GameCanvas.Margin.Left > -GameCanvas.ActualWidth / 2 + hero.Width / 2 )
-            {
-                GameCanvas.Margin = new Thickness(canvasLeft -= step, canvasTop, 0, 0);
-                HeroLeftSide(hero);
-
-            }
-            else if(e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.ActualWidth < Game.ActualWidth + GameCanvas.ActualWidth / 2 - hero.Width / 2)
-            {
-                GameCanvas.Margin = new Thickness(canvasLeft += step, canvasTop, 0, 0);
-                HeroRightSide(hero);
-            }
-        }
 
         //Обработчик для кнопки начать игру в главном меню
         private void play_Click(object sender, RoutedEventArgs e)
@@ -228,7 +144,7 @@ namespace Game
             MainMenu.Visibility = Visibility.Hidden;
             Game.Visibility = Visibility.Visible;
             GameCanvas.Visibility = Visibility.Visible;
-            InitializeGame();
+            ClassForPlayer.InitializeGame(hero, GameCanvas, heroHealth, heroArmor);
         }
         //Обработчик для кнопки настройки в главном меню
         private void settings_Click(object sender, RoutedEventArgs e)
@@ -246,7 +162,7 @@ namespace Game
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             InitializeMediaPlayer();
-            InitializeImagesClass.InitializeImages(MainMenu);
+            InitializesMenu.InitializeImages(MainMenu);
             InitializeMainButtons();
         }
 
@@ -410,7 +326,7 @@ namespace Game
             }
             if (Game.Visibility == Visibility.Visible)
             {
-                HeroMove(e);
+                ClassForPlayer.HeroMove(e, GameCanvas, Game, hero);
             }
         }
 

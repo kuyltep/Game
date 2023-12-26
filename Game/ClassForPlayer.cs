@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Windows.Input;
-
 namespace Game
 {
     internal class ClassForPlayer
@@ -16,9 +15,10 @@ namespace Game
         int canvasLeft { get; set; }
         int canvasTop { get; set; }
 
+        public Image gunRight = new Image();
+        public Image gunLeft = new Image();
 
-
-        public void InitializeGame(Image hero, Grid GameCanvas, int heroHealth, int heroArmor)
+        public void InitializeGame(Image hero, Grid GameCanvas, int heroHealth, int heroArmor, string gunName )
         {
 
             HeroRightSide(hero);
@@ -28,7 +28,47 @@ namespace Game
             hero.HorizontalAlignment = HorizontalAlignment.Center;
             hero.Margin = new Thickness(0, 0, 0, 0);
             GameCanvas.Children.Add(hero);
+            setRightGun(gunName, GameCanvas);
+            setLeftGun(gunName, GameCanvas);
+            gunLeft.Visibility = Visibility.Hidden;
             HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
+
+        }
+
+        public Image setRightGun(string gunName, Grid GameCanvas)
+        {
+            BitmapImage gunRightImage = new BitmapImage();
+            gunRightImage.BeginInit();
+            gunRightImage.UriSource = new Uri($"images/guns/{gunName}Right.png", UriKind.Relative);
+            gunRightImage.EndInit();
+            gunRight.Source = gunRightImage;
+            gunRight.Height = 12;
+            gunRight.Width = 12;
+            gunRight.VerticalAlignment = VerticalAlignment.Center;
+            gunRight.HorizontalAlignment = HorizontalAlignment.Center;
+            gunRight.Margin = new Thickness(25, 5, 0, 0);
+            gunRight.Visibility = Visibility.Visible;
+            GameCanvas.Children.Add(gunRight);
+            return gunRight;
+        }
+
+        public Image setLeftGun(string gunName, Grid GameCanvas)
+        {
+            
+            BitmapImage gunLeftImage = new BitmapImage();
+            gunLeftImage.BeginInit();
+            gunLeftImage.UriSource = new Uri($"images/guns/{gunName}Left.png", UriKind.Relative);
+            gunLeftImage.EndInit();
+            gunLeft.Source = gunLeftImage;
+            gunLeft.Height = 12;
+            gunLeft.Width = 12;
+            gunLeft.VerticalAlignment = VerticalAlignment.Center;
+            gunLeft.HorizontalAlignment = HorizontalAlignment.Center;
+            gunLeft.Margin = new Thickness(0, 5, 25, 0);
+            gunLeft.Visibility = Visibility.Visible;
+            GameCanvas.Children.Add(gunLeft);
+            return gunLeft;
+
         }
 
         //Hero health and Hero armor
@@ -79,8 +119,9 @@ namespace Game
         }
 
         //Hero Move
-        public void HeroMove(KeyEventArgs e, Grid GameCanvas, Grid Game, Image hero )
+        public void HeroMove(KeyEventArgs e, Grid GameCanvas, Grid Game, Image hero, string gunName )
         {
+            
             int step = 3;
 
             if (e.Key.ToString() == "W" && GameCanvas.Margin.Top > -GameCanvas.ActualHeight / 2 + hero.Height / 2)
@@ -96,12 +137,16 @@ namespace Game
             {
                 GameCanvas.Margin = new Thickness(canvasLeft -= step, canvasTop, 0, 0);
                 HeroLeftSide(hero);
+                gunRight.Visibility = Visibility.Hidden;
+                gunLeft.Visibility = Visibility.Visible;
 
             }
             else if (e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.ActualWidth < Game.ActualWidth + GameCanvas.ActualWidth / 2 - hero.Width / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft += step, canvasTop, 0, 0);
                 HeroRightSide(hero);
+                gunLeft.Visibility = Visibility.Hidden;
+                gunRight.Visibility = Visibility.Visible;
             }
         }
     }

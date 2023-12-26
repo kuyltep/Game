@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace Game
 {
 
@@ -26,8 +27,8 @@ namespace Game
         Generation generation = new Generation();
 
 
-        public int heroHealth = 5;
-        public int heroArmor = 5;
+        public int heroHealth = 3;
+        public int heroArmor = 3;
         public int canvasLeft = 0;
         public int canvasTop = 0;
         public int heroLeft = 0;
@@ -36,6 +37,7 @@ namespace Game
         private MediaPlayer _mpBgr;
         private MediaPlayer _mpCurSound;
         public Image hero = new Image();
+        public string gunName = "GreenGun";
 
         public MainWindow()
         {
@@ -51,7 +53,7 @@ namespace Game
         {
             RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
 
-            circleGeometry = new EllipseGeometry(new Point(50, 50), 40, 40);
+            circleGeometry = new EllipseGeometry(new Point(50, 50), 80, 80);
 
             GeometryGroup combination = new GeometryGroup();
             combination.Children.Add(squareGeometry);
@@ -188,7 +190,7 @@ namespace Game
             MainMenu.Visibility = Visibility.Hidden;
             Game.Visibility = Visibility.Visible;
             GameCanvas.Visibility = Visibility.Visible;
-            ClassForPlayer.InitializeGame(hero, GameCanvas, heroHealth, heroArmor);
+            ClassForPlayer.InitializeGame(hero, GameCanvas, heroHealth, heroArmor, gunName);
         }
         //Обработчик для кнопки настройки в главном меню
         private void settings_Click(object sender, RoutedEventArgs e)
@@ -370,7 +372,7 @@ namespace Game
             }
             if (Game.Visibility == Visibility.Visible)
             {
-                ClassForPlayer.HeroMove(e, GameCanvas, Game, hero);
+                ClassForPlayer.HeroMove(e, GameCanvas, Game, hero, gunName);
             }
         }
 

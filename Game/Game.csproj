@@ -136,22 +136,30 @@
     <Resource Include="images\armor\1arm.png" />
     <Resource Include="images\armor\2arm.png" />
     <Resource Include="images\armor\3arm.png" />
-    <Resource Include="images\armor\4arm.png" />
-    <Resource Include="images\armor\5arm.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\hp\0hp.png" />
     <Resource Include="images\hp\1hp.png" />
     <Resource Include="images\hp\2hp.png" />
     <Resource Include="images\hp\3hp.png" />
-    <Resource Include="images\hp\4hp.png" />
-    <Resource Include="images\hp\5hp.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="2.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\heroLeftSide.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\guns\GreenGunLeft.png" />
+    <Resource Include="images\guns\GreenGunRight.png" />
+    <Resource Include="images\guns\GuitarRight.png" />
+    <Resource Include="images\guns\GuitarLeft.png" />
+    <Resource Include="images\guns\MegagunRight.png" />
+    <Resource Include="images\guns\MegagunLeft.png" />
+    <Resource Include="images\guns\RedGunRight.png" />
+    <Resource Include="images\guns\RedGunLeft.png" />
+    <Resource Include="images\guns\StartGunRight.png" />
+    <Resource Include="images\guns\StartGunLeft.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

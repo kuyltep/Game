@@ -197,6 +197,7 @@ namespace Game
         {
             MainMenu.Visibility = Visibility.Hidden;
             Settings.Visibility = Visibility.Visible;
+            InitializeSettingsButtons();
         }
         //Обработчик для кнопки выход в главном меню
         private void exit_Click(object sender, RoutedEventArgs e)

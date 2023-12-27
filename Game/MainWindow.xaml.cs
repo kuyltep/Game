@@ -53,7 +53,7 @@ namespace Game
         {
             RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
 
-            circleGeometry = new EllipseGeometry(new Point(50, 50), 80, 80);
+            circleGeometry = new EllipseGeometry(new Point(50, 50), 60, 60);
 
             GeometryGroup combination = new GeometryGroup();
             combination.Children.Add(squareGeometry);
@@ -70,18 +70,17 @@ namespace Game
             };
 
             path.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
-
             lightCanvas.Children.Add(path);
+            if (circleGeometry != null)
+            {
+                Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
+                circleGeometry.Center = heromove;
+                lightCanvas.InvalidateVisual();
+            }
         }
         private void lightCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (circleGeometry != null)
-            {
-                Point mousePosition = e.GetPosition(lightCanvas);
-                circleGeometry.Center = mousePosition;
-
-                lightCanvas.InvalidateVisual();
-            }
+ 
         }
 
         //Класс для инициализации плеера для музыки
@@ -140,10 +139,12 @@ namespace Game
             MainMenu.Children.Add(exitToMainMenu);
         }
         //Класс для инициализации кнопок в меню настроек на главном гриде
+        public Button musicOff = new Button();
+        public Button musicOn = new Button();
+
         public void InitializeSettingsButtons()
         {
             //Initialize musicOff button
-            Button musicOff = new Button();
             musicOff.FontFamily = new FontFamily("Wide Latin");
             musicOff.FontSize = 24;
             musicOff.Width = 330;
@@ -156,7 +157,6 @@ namespace Game
             musicOff.Margin = new Thickness(0, 0, 0, 150);
             Settings.Children.Add(musicOff);
             //Initialize musicOn button
-            Button musicOn = new Button();
             musicOn.FontFamily = new FontFamily("Wide Latin");
             musicOn.FontSize = 24;
             musicOn.Width = 330;
@@ -197,7 +197,6 @@ namespace Game
         {
             MainMenu.Visibility = Visibility.Hidden;
             Settings.Visibility = Visibility.Visible;
-            InitializeSettingsButtons();
         }
         //Обработчик для кнопки выход в главном меню
         private void exit_Click(object sender, RoutedEventArgs e)
@@ -210,6 +209,8 @@ namespace Game
             InitializeMediaPlayer();
             InitializesMenu.InitializeImages(MainMenu);
             InitializeMainButtons();
+
+
         }
 
         //Класс для инициализации кнопок меню паузы в процессе игры
@@ -307,6 +308,8 @@ namespace Game
             {
                 _mpBgr.Play();
                 isMusicOn = !isMusicOn;
+                musicOn.IsEnabled = false;
+                musicOff.IsEnabled = true;
             }
         }
         //Обработчик для кнопки выключить музыку в меню настроек
@@ -316,6 +319,8 @@ namespace Game
             {
                 _mpBgr.Pause();
                 isMusicOn = !isMusicOn;
+                musicOff.IsEnabled = false;
+                musicOn.IsEnabled = true;
             }
         }
         //Обработчик для кнопки вернуться в главное меню
@@ -373,7 +378,14 @@ namespace Game
             if (Game.Visibility == Visibility.Visible)
             {
                 ClassForPlayer.HeroMove(e, GameCanvas, Game, hero, gunName);
+                if (circleGeometry != null)
+                {
+                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
+                    circleGeometry.Center = heromove;
+                    lightCanvas.InvalidateVisual();
+                }
             }
+
         }
 
   

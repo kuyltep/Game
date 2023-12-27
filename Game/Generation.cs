@@ -17,6 +17,8 @@ namespace Game
         private const int MapWidth = ShareData.MapWidth;// Ширина карты в тайлах
         private const int MapHeight = ShareData.MapHeight;// Высота карты в тайлах
         private const int TileSize = ShareData.TileSize;// Размер тайла
+
+        private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
         public void GenerateMap(Canvas gameCanvas)// Стартуем
         {                                         // Генерация рандомных комнат
             Random rand = new Random();
@@ -214,6 +216,7 @@ namespace Game
                 Canvas.SetTop(tile, y * TileSize);// Позиция по y ( куда ставить тайл?)
 
                 gameCanvas.Children.Add(tile);// =)
+                tilesList.Add(tile);
             }
         }
     }

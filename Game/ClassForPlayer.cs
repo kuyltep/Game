@@ -124,16 +124,16 @@ namespace Game
             
             int step = 3;
 
-            if (e.Key.ToString() == "W" && GameCanvas.Margin.Top > -GameCanvas.ActualHeight / 2 + hero.Height / 2)
+            if ((e.Key.ToString() == "W" || e.Key.ToString() == "Up") && GameCanvas.Margin.Top > -GameCanvas.ActualHeight / 2 + hero.Height / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft, canvasTop -= step, 0, 0);
             }
-            else if (e.Key.ToString() == "S" && GameCanvas.Margin.Top + GameCanvas.Height + 20 < Game.ActualHeight + GameCanvas.ActualHeight / 2 + hero.Height / 2)
+            else if ((e.Key.ToString() == "S" || e.Key.ToString() == "Down") && GameCanvas.Margin.Top + GameCanvas.Height + 20 < Game.ActualHeight + GameCanvas.ActualHeight / 2 + hero.Height / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft, canvasTop += step, 0, 0);
 
             }
-            else if (e.Key.ToString() == "A" && GameCanvas.Margin.Left > -GameCanvas.ActualWidth / 2 + hero.Width / 2)
+            else if ((e.Key.ToString() == "A" || e.Key.ToString() == "Left") && GameCanvas.Margin.Left > -GameCanvas.ActualWidth / 2 + hero.Width / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft -= step, canvasTop, 0, 0);
                 HeroLeftSide(hero);
@@ -141,7 +141,7 @@ namespace Game
                 gunLeft.Visibility = Visibility.Visible;
 
             }
-            else if (e.Key.ToString() == "D" && GameCanvas.Margin.Left + GameCanvas.ActualWidth < Game.ActualWidth + GameCanvas.ActualWidth / 2 - hero.Width / 2)
+            else if ((e.Key.ToString() == "D" || e.Key.ToString() == "Right" ) && GameCanvas.Margin.Left + GameCanvas.ActualWidth < Game.ActualWidth + GameCanvas.ActualWidth / 2 - hero.Width / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft += step, canvasTop, 0, 0);
                 HeroRightSide(hero);

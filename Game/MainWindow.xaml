@@ -20,8 +20,9 @@
                 </Grid.Background>
             </Grid>
             <Grid x:Name="Game" Visibility="Hidden" Background="White">
-                <Grid x:Name="GameCanvas"  Visibility="Hidden" Width="150" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFAB3C3C" Panel.ZIndex="2"  />
-                <Canvas x:Name="gameCanvas"/>
+                <Grid x:Name="GameCanvas"  Visibility="Hidden" Width="150" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="2">
+                </Grid>
+            <Canvas x:Name="gameCanvas"/>
                     <Canvas x:Name="lightCanvas" MouseMove="lightCanvas_MouseMove"/>
             </Grid>
             <Grid x:Name="MainMenu" >

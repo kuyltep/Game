@@ -7,6 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Windows.Media;
 namespace Game
 {
     internal class ClassForPlayer
@@ -15,8 +18,66 @@ namespace Game
         int canvasLeft { get; set; }
         int canvasTop { get; set; }
 
+    
+
+
         public Image gunRight = new Image();
         public Image gunLeft = new Image();
+
+        private List<(Ellipse bullet, int direction)> bullets = new List<(Ellipse, int)>();
+        private DispatcherTimer bulletTimer = new DispatcherTimer();
+        public int direction = 1;
+
+        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas)
+        {
+            bulletTimer.Interval = TimeSpan.FromMilliseconds(10);
+            bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas);
+        }
+
+
+
+        public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas)
+        {
+            for (int i = bullets.Count - 1; i >= 0; i--)
+            {
+                var (bullet, direction) = bullets[i];
+                Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + 5 * direction); // Скорость полета пули, умноженная на направление
+
+                // Удаление пули, если она преодолела расстояние 200 пикселей
+                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left  + GameCanvas.Width / 2)) >= 200 || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= 200  || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth)
+                {
+                    gameCanvas.Children.Remove(bullet);
+                    bullets.RemoveAt(i);
+                }
+            }
+        }
+
+        public void MouseDown (object sender, MouseEventArgs e, Canvas gameCanvas, Grid GameCanvas, Image hero)
+        {
+            var bullet = new Ellipse
+            {
+                Width = 6,
+                Height = 5,
+                Fill = Brushes.OrangeRed
+            };
+            gameCanvas.Children.Add(bullet);
+            if(direction == 1)
+            { 
+            Canvas.SetLeft(bullet, GameCanvas.Margin.Left + GameCanvas.Width / 2 + hero.Width); // Начальная позиция пули по оси X
+            Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2); // Начальная позиция пули по оси Y
+            }
+            else
+            {
+                Canvas.SetLeft(bullet, GameCanvas.Margin.Left + GameCanvas.Width / 2 - hero.Width); // Начальная позиция пули по оси X
+                Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2); // Начальная позиция пули по оси Y
+            }
+            bullets.Add((bullet, direction));
+
+            if (!bulletTimer.IsEnabled)
+            {
+                bulletTimer.Start();
+            }
+        }
 
         public void InitializeGame(Image hero, Grid GameCanvas, int heroHealth, int heroArmor, string gunName )
         {
@@ -119,7 +180,7 @@ namespace Game
         }
 
         //Hero Move
-        public void HeroMove(KeyEventArgs e, Grid GameCanvas, Grid Game, Image hero, string gunName )
+        public void HeroMove(KeyEventArgs e, Grid GameCanvas, Grid Game, Image hero,  string gunName)
         {
             
             int step = 3;
@@ -135,14 +196,15 @@ namespace Game
             }
             else if ((e.Key.ToString() == "A" || e.Key.ToString() == "Left") && GameCanvas.Margin.Left > -GameCanvas.ActualWidth / 2 + hero.Width / 2)
             {
+                direction = -1;
                 GameCanvas.Margin = new Thickness(canvasLeft -= step, canvasTop, 0, 0);
                 HeroLeftSide(hero);
                 gunRight.Visibility = Visibility.Hidden;
                 gunLeft.Visibility = Visibility.Visible;
-
             }
             else if ((e.Key.ToString() == "D" || e.Key.ToString() == "Right" ) && GameCanvas.Margin.Left + GameCanvas.ActualWidth < Game.ActualWidth + GameCanvas.ActualWidth / 2 - hero.Width / 2)
             {
+                direction = 1;
                 GameCanvas.Margin = new Thickness(canvasLeft += step, canvasTop, 0, 0);
                 HeroRightSide(hero);
                 gunLeft.Visibility = Visibility.Hidden;

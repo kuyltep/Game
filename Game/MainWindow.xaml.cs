@@ -13,6 +13,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 
 namespace Game
@@ -39,15 +40,24 @@ namespace Game
         public Image hero = new Image();
         public string gunName = "GreenGun";
 
+      
+        InitializesMenuClass InitializesMenu = new InitializesMenuClass();
+        ClassForPlayer ClassForPlayer = new ClassForPlayer();
+
         public MainWindow()
         {
             InitializeComponent();
             generation.GenerateMap(gameCanvas);
             Light();
+            ClassForPlayer.InitializeBulletTimer(gameCanvas, GameCanvas);
 
         }
-        InitializesMenuClass InitializesMenu = new InitializesMenuClass();
-        ClassForPlayer ClassForPlayer = new ClassForPlayer();
+
+
+        private void Game_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ClassForPlayer.MouseDown(sender, e, gameCanvas, GameCanvas, hero);
+        }
 
         private void Light()
         {
@@ -78,10 +88,7 @@ namespace Game
                 lightCanvas.InvalidateVisual();
             }
         }
-        private void lightCanvas_MouseMove(object sender, MouseEventArgs e)
-        {
- 
-        }
+
 
         //Класс для инициализации плеера для музыки
         public void InitializeMediaPlayer()
@@ -389,7 +396,7 @@ namespace Game
 
         }
 
-  
+
     }
     
   

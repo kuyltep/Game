@@ -26,7 +26,8 @@ namespace Game
         private const int TileSize = ShareData.TileSize;
         private EllipseGeometry circleGeometry;
         Generation generation = new Generation();
-
+        public bool isSettingsMenuOpen = false;
+        public bool isGameInitialize = false;
 
         public int heroHealth = 3;
         public int heroArmor = 3;
@@ -39,7 +40,7 @@ namespace Game
         private MediaPlayer _mpCurSound;
         public Image hero = new Image();
         public string gunName = "GreenGun";
-
+        public List<Rectangle> enemies = new List<Rectangle>();
       
         InitializesMenuClass InitializesMenu = new InitializesMenuClass();
         ClassForPlayer ClassForPlayer = new ClassForPlayer();
@@ -49,8 +50,8 @@ namespace Game
             InitializeComponent();
             generation.GenerateMap(gameCanvas);
             Light();
-            ClassForPlayer.InitializeBulletTimer(gameCanvas, GameCanvas);
-
+            ClassForPlayer.InitializeBulletTimer(gameCanvas, GameCanvas, enemies);
+            generation.InitializeEnemyTimer(gameCanvas);
         }
 
 
@@ -99,7 +100,6 @@ namespace Game
             _mpBgr.Open(new Uri(@"sounds\music.mp3", UriKind.Relative));
             _mpBgr.Play();
             isMusicOn = true;
-            //_mpBgr.Position = TimeSpan.FromMinutes(11.45);
         }
 
         //Класс для инициализации кнопок главного меню на грид
@@ -197,14 +197,22 @@ namespace Game
             MainMenu.Visibility = Visibility.Hidden;
             Game.Visibility = Visibility.Visible;
             GameCanvas.Visibility = Visibility.Visible;
+            if (!isGameInitialize)
+            {
             ClassForPlayer.InitializeGame(hero, GameCanvas, heroHealth, heroArmor, gunName);
+             isGameInitialize = true;
+            }
         }
         //Обработчик для кнопки настройки в главном меню
         private void settings_Click(object sender, RoutedEventArgs e)
         {
             MainMenu.Visibility = Visibility.Hidden;
             Settings.Visibility = Visibility.Visible;
+            if (!isSettingsMenuOpen)
+            { 
             InitializeSettingsButtons();
+            isSettingsMenuOpen = true;
+            }
         }
         //Обработчик для кнопки выход в главном меню
         private void exit_Click(object sender, RoutedEventArgs e)
@@ -359,6 +367,7 @@ namespace Game
             PauseMenu.Visibility = Visibility.Hidden;
             Game.Children.Clear();
             MainMenu.Visibility=Visibility.Visible;
+            isGameInitialize = false;
 
         }
         //Обработчик для кнопки вернуться в меню паузы в меню настроек паузы

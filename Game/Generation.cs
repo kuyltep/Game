@@ -8,17 +8,22 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
 using System.Windows.Media.Media3D;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 
 namespace Game
 {
     internal class Generation
     {
+        List<Rectangle> enemies = new List<Rectangle>();
         private const int MapWidth = ShareData.MapWidth;// Ширина карты в тайлах
         private const int MapHeight = ShareData.MapHeight;// Высота карты в тайлах
         private const int TileSize = ShareData.TileSize;// Размер тайла
+        private DispatcherTimer enemyTimer = new DispatcherTimer();
+        Random random = new Random();
 
-        private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
+        public List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
         public void GenerateMap(Canvas gameCanvas)// Стартуем
         {                                         // Генерация рандомных комнат
             Random rand = new Random();
@@ -218,6 +223,66 @@ namespace Game
                 gameCanvas.Children.Add(tile);// =)
                 tilesList.Add(tile);
             }
+
         }
+
+        public void MoveCharacter(int X, int Y, Image hero, Grid GameCanvas, int characterX, int characterY, int canvasLeft, int canvasTop)
+        {
+            int CharacterX1 = characterX * X;
+            int CharacterY1 = characterY * Y;
+
+            if (!Collision(CharacterX1, CharacterY1))
+            {
+                GameCanvas.Margin = new Thickness(canvasLeft += CharacterX1, canvasTop += CharacterY1, 0, 0);
+                hero.Margin = new Thickness(characterX += CharacterX1, characterY += CharacterY1, 0, 0);
+            }
+        }
+
+        private bool Collision(int x, int y)
+        {
+            foreach (Rectangle tile in tilesList)
+            {
+                int tileX = (int)Canvas.GetLeft(tile) / TileSize;
+                int tileY = (int)Canvas.GetTop(tile) / TileSize;
+
+                if (tileX == x && tileY == y)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void InitializeEnemyTimer(Canvas gameCanvas)
+        {
+            enemyTimer.Interval = TimeSpan.FromSeconds(3); // Интервал появления новых врагов
+            enemyTimer.Tick += (sender, e) => EnemyTimer_Tick(sender, e, gameCanvas);
+            enemyTimer.Start();
+        }
+
+        private void EnemyTimer_Tick(object sender, EventArgs e, Canvas gameCanvas)
+        {
+            CreateEnemy(gameCanvas);
+        }
+
+        private void CreateEnemy(Canvas gameCanvas)
+        {
+            Rectangle enemy = new Rectangle
+            {
+                Width = 20,
+                Height = 20,
+                Fill = Brushes.Red
+            };
+            gameCanvas.Children.Add(enemy);
+
+            double randomX = random.Next((int)(gameCanvas.ActualWidth - enemy.Width));
+            double randomY = random.Next((int)(gameCanvas.ActualHeight - enemy.Height));
+
+            Canvas.SetLeft(enemy, randomX);
+            Canvas.SetTop(enemy, randomY);
+
+            enemies.Add(enemy);
+        }
+
     }
 }

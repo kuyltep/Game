@@ -14,47 +14,93 @@ namespace Game
 {
     internal class ClassForPlayer
     {
-
+        Generation Generation = new Generation();
         int canvasLeft { get; set; }
         int canvasTop { get; set; }
 
-    
-
+        int heroLeft { get; set; }
+        int heroTop { get; set; }
 
         public Image gunRight = new Image();
         public Image gunLeft = new Image();
 
-        private List<(Ellipse bullet, int direction)> bullets = new List<(Ellipse, int)>();
+        private List<(Rectangle bullet, int direction)> bullets = new List<(Rectangle, int)>();
         private DispatcherTimer bulletTimer = new DispatcherTimer();
         public int direction = 1;
 
-        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas)
+        public static bool CheckRectangleIntersection(Rectangle rect1, Rectangle rect2)
+        {
+            // Получаем границы прямоугольников
+            Rect bounds1 = GetBounds(rect1);
+            Rect bounds2 = GetBounds(rect2);
+
+            // Проверяем пересечение границ прямоугольников
+            return bounds1.IntersectsWith(bounds2);
+        }
+
+        // Метод для получения границ прямоугольника Rectangle
+        public static Rect GetBounds(Rectangle rectangle)
+        {
+            // Используем ActualWidth и ActualHeight для определения границ
+            return new Rect(Canvas.GetLeft(rectangle), Canvas.GetTop(rectangle), rectangle.ActualWidth, rectangle.ActualHeight);
+        }
+
+        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies )
         {
             bulletTimer.Interval = TimeSpan.FromMilliseconds(10);
-            bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas);
+            bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas, enemies);
         }
 
 
-
-        public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas)
+        public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
         {
             for (int i = bullets.Count - 1; i >= 0; i--)
             {
                 var (bullet, direction) = bullets[i];
+                double bulletLeft = Canvas.GetLeft(bullet);
+                double bulletRight = bulletLeft + bullet.Width;
+                double bulletTop = Canvas.GetTop(bullet);
+                double bulletBottom = bulletTop + bullet.Height;
                 Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + 5 * direction); // Скорость полета пули, умноженная на направление
 
                 // Удаление пули, если она преодолела расстояние 200 пикселей
-                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left  + GameCanvas.Width / 2)) >= 200 || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= 200  || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth)
+                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= 200 || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= 200 || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth)
                 {
                     gameCanvas.Children.Remove(bullet);
                     bullets.RemoveAt(i);
                 }
+            for (int j = enemies.Count - 1; j >= 0; j--)
+            {
+                var enemy = enemies[j];
+
+                // Получаем границы врага
+                double enemyLeft = Canvas.GetLeft(enemy);
+                double enemyRight = enemyLeft + enemy.Width;
+                double enemyTop = Canvas.GetTop(enemy);
+                double enemyBottom = enemyTop + enemy.Height;
+
+                    // Проверяем пересечение пули и врага
+                    bool isIntersect = CheckRectangleIntersection(enemy, bullet);
+                if (isIntersect)
+                {
+                    // Столкновение произошло - удаляем пулю и врага
+                    gameCanvas.Children.Remove(bullet);
+                    gameCanvas.Children.Remove(enemy);
+
+                    bullets.RemoveAt(i);
+                    enemies.RemoveAt(j);
+                    break; // Прерываем проверку этой пули с оставшимися врагами
+                }
             }
+            }
+
+        
         }
+
 
         public void MouseDown (object sender, MouseEventArgs e, Canvas gameCanvas, Grid GameCanvas, Image hero)
         {
-            var bullet = new Ellipse
+            var bullet = new Rectangle
             {
                 Width = 6,
                 Height = 5,
@@ -78,6 +124,9 @@ namespace Game
                 bulletTimer.Start();
             }
         }
+
+ 
+
 
         public void InitializeGame(Image hero, Grid GameCanvas, int heroHealth, int heroArmor, string gunName )
         {
@@ -184,7 +233,7 @@ namespace Game
         {
             
             int step = 3;
-
+            
             if ((e.Key.ToString() == "W" || e.Key.ToString() == "Up") && GameCanvas.Margin.Top > -GameCanvas.ActualHeight / 2 + hero.Height / 2)
             {
                 GameCanvas.Margin = new Thickness(canvasLeft, canvasTop -= step, 0, 0);
@@ -210,6 +259,40 @@ namespace Game
                 gunLeft.Visibility = Visibility.Hidden;
                 gunRight.Visibility = Visibility.Visible;
             }
+            
+            /*
+            switch (e.Key)
+            {
+                case (Key.Up):
+                    Generation.MoveCharacter(0, -1, hero, GameCanvas, heroLeft, heroTop, canvasLeft, canvasTop);
+                    break;
+                case Key.Down:
+                    Generation.MoveCharacter(0, 1, hero, GameCanvas, heroLeft, heroTop, canvasLeft, canvasTop);
+                    break;
+                case Key.Left:
+                    Generation.MoveCharacter(-1, 0, hero, GameCanvas, heroLeft, heroTop, canvasLeft, canvasTop);
+                    HeroLeftSide(hero);
+                    gunRight.Visibility = Visibility.Hidden;
+                    gunLeft.Visibility = Visibility.Visible;
+                    direction = -1;
+                    break;
+                case Key.Right:
+                    Generation.MoveCharacter(1, 0, hero, GameCanvas, heroLeft, heroTop, canvasLeft, canvasTop);
+                    direction = 1;
+                    HeroRightSide(hero);
+                    gunLeft.Visibility = Visibility.Hidden;
+                    gunRight.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
+            */
         }
+
+        //*******************
+        /*
+         
+         */
+
     }
 }

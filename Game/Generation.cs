@@ -10,18 +10,24 @@ using System.Windows;
 using System.Windows.Media.Media3D;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Windows.Media.Imaging;
 
 
 namespace Game
 {
     internal class Generation
-    {
+    {   
+        List<(Image, string)> itemsImages = new List<(Image, string)>();
+        string[] items = {"book", "drink", "eye", "hearth", "stew"};
         List<Rectangle> enemies = new List<Rectangle>();
         private const int MapWidth = ShareData.MapWidth;// Ширина карты в тайлах
         private const int MapHeight = ShareData.MapHeight;// Высота карты в тайлах
         private const int TileSize = ShareData.TileSize;// Размер тайла
         private DispatcherTimer enemyTimer = new DispatcherTimer();
         Random random = new Random();
+        Random randomItem = new Random();
+        int itemsCount = 0;
+
 
         public List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
         public void GenerateMap(Canvas gameCanvas)// Стартуем
@@ -63,6 +69,21 @@ namespace Game
             for (int i = 0; i < roomCenters.Count - 1; i++)
             {
                 ConnectRooms(roomCenters[i], roomCenters[i + 1]);
+
+                //Рандомная генерация предметов на карте, но не работает то, что они должны добавляться в центр комнаты
+
+                int index = randomItem.Next(0, items.Length);
+                Image itemImage = new Image();
+                BitmapImage item = new BitmapImage();
+                item.BeginInit();
+                item.UriSource = new Uri($"images/items/{items[index]}.png", UriKind.Relative);
+                item.EndInit();
+                itemImage.Source = item;
+                itemImage.Width = 12;
+                itemImage.Height = 12;
+                itemImage.Margin = new Thickness(randomItem.Next(0, 1800), randomItem.Next(0, 900), 0, 0);
+                itemsImages.Add((itemImage, items[index]));
+                gameCanvas.Children.Add(itemImage);
             }
 
             for (int i = 0; i < numRooms; i++)// Теперь рисуем комнаты и их границы
@@ -255,7 +276,7 @@ namespace Game
 
         public void InitializeEnemyTimer(Canvas gameCanvas)
         {
-            enemyTimer.Interval = TimeSpan.FromSeconds(3); // Интервал появления новых врагов
+            enemyTimer.Interval = TimeSpan.FromSeconds(5); // Интервал появления новых врагов
             enemyTimer.Tick += (sender, e) => EnemyTimer_Tick(sender, e, gameCanvas);
             enemyTimer.Start();
         }
@@ -265,23 +286,26 @@ namespace Game
             CreateEnemy(gameCanvas);
         }
 
-        private void CreateEnemy(Canvas gameCanvas)
+        public void CreateEnemy(Canvas gameCanvas)
         {
-            Rectangle enemy = new Rectangle
+            
+            for (int i = 0; i < 6; i++)
             {
-                Width = 20,
-                Height = 20,
-                Fill = Brushes.Red
-            };
-            gameCanvas.Children.Add(enemy);
+                Rectangle enemy = new Rectangle
+                {
+                    Width = 15,
+                    Height = 15,
+                    Fill = Brushes.Red
+                };
+                gameCanvas.Children.Add(enemy);
 
             double randomX = random.Next((int)(gameCanvas.ActualWidth - enemy.Width));
             double randomY = random.Next((int)(gameCanvas.ActualHeight - enemy.Height));
 
             Canvas.SetLeft(enemy, randomX);
             Canvas.SetTop(enemy, randomY);
-
             enemies.Add(enemy);
+            }
         }
 
     }

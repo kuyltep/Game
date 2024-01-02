@@ -10,7 +10,7 @@ namespace Game
     {
         public const int MapWidth = 300;    // Ширина карты в тайлах
         public const int MapHeight = 300;    // Высота карты в тайлах
-        public const int TileSize = 8;     // Размер тайла
+        public const int TileSize = 5;     // Размер тайла
 
     }
 }

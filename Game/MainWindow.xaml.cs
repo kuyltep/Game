@@ -86,7 +86,7 @@ namespace Game
                 {
                     for (int i = x; i < x + width; i++)
                     {
-                        DrawTile(i, y, new SolidColorBrush(Colors.LightGray));// Граница верхняя
+                        DrawTileV(i, y, new SolidColorBrush(Colors.LightGray));// Граница верхняя
                         DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightGray));// Граница нижняя
                         DrawTile(i, y + height, new SolidColorBrush(Colors.Gray));// Дополнительный слой тайлов под нижней границей
                     }
@@ -106,7 +106,7 @@ namespace Game
                     {
                         for (int j = y + 1; j < y + height - 1; j++)
                         {
-                            DrawTile(i, j, (j == y + 1) ? new SolidColorBrush(Colors.Gray) : Brushes.Beige);
+                            DrawTileV(i, j, (j == y + 1) ? new SolidColorBrush(Colors.Gray) : Brushes.Beige);
                         }
                     }
 
@@ -116,21 +116,21 @@ namespace Game
                     {
                         case 0: // Верхняя стенка
                             int doorTop = rand.Next(x + 1, x + width - 2);
-                            DrawTile(doorTop, y, Brushes.Red);
-                            DrawTile(doorTop, y + 1, Brushes.Red);
+                            DrawTileV(doorTop, y, Brushes.Red);
+                            DrawTileV(doorTop, y + 1, Brushes.Red);
                             break;
                         case 1: // Нижняя стенка
                             int doorBottom = rand.Next(x + 1, x + width - 2);
-                            DrawTile(doorBottom, y + height - 1, Brushes.Red);
-                            DrawTile(doorBottom, y + height, Brushes.Red);
+                            DrawTileV(doorBottom, y + height - 1, Brushes.Red);
+                            DrawTileV(doorBottom, y + height, Brushes.Red);
                             break;
                         case 2: // Левая стенка
                             int doorLeft = rand.Next(y + 1, y + height - 2);
-                            DrawTile(x, doorLeft, Brushes.Red);
+                            DrawTileV(x, doorLeft, Brushes.Red);
                             break;
                         case 3: // Правая стенка
                             int doorRight = rand.Next(y + 1, y + height - 2);
-                            DrawTile(x + width - 1, doorRight, Brushes.Red);
+                            DrawTileV(x + width - 1, doorRight, Brushes.Red);
                             break;
                         default:
                             break;
@@ -251,13 +251,13 @@ namespace Game
 
                     while (x != end.X)
                     {
-                        DrawTile(x, y, new SolidColorBrush(Colors.DarkGray));// Горизонтальная дорожка
+                        DrawTileV(x, y, new SolidColorBrush(Colors.DarkGray));// Горизонтальная дорожка
                         x += (int)Math.Sign(end.X - start.X);
                     }
 
                     while (y != end.Y)
                     {
-                        DrawTile(x, y, new SolidColorBrush(Colors.DarkGray));// Вертикальная дорожка
+                        DrawTileV(x, y, new SolidColorBrush(Colors.DarkGray));// Вертикальная дорожка
                         y += (int)Math.Sign(end.Y - start.Y);
                     }
                 }
@@ -276,26 +276,43 @@ namespace Game
                     gameCanvas.Children.Add(tile);// =)
                     tilesList.Add(tile);
                 }
+            void DrawTileV(int x, int y, Brush brush)// Рисуем тайлы
+            {
+                Rectangle tile = new Rectangle// Тайл = квадрат
+                {
+                    Width = TileSize,// Ширина тайла
+                    Height = TileSize,// Высота тайла
+                    Fill = brush// Заливка
+                };
+
+                Canvas.SetLeft(tile, x * TileSize);// Позиция по x
+                Canvas.SetTop(tile, y * TileSize);// Позиция по y ( куда ставить тайл?)
+
+                gameCanvas.Children.Add(tile);// =)
             }
+        }
 
             private int characterX = 0;
             private int characterY = 0;
-            private void MoveCharacter(int X, int Y)
+        private void MoveCharacter(int X, int Y)
+        {
+            int CharacterX1 = characterX + X;
+            int CharacterY1 = characterY + Y;
+
+            if (!Collision(CharacterX1, CharacterY1))
             {
-                int CharacterX1 = characterX + X;
-                int CharacterY1 = characterY + Y;
+                characterX = CharacterX1;
+                characterY = CharacterY1;
 
-                if (!Collision(CharacterX1, CharacterY1))
-                {
-                    characterX = CharacterX1;
-                    characterY = CharacterY1;
+                Canvas.SetLeft(CharacterRectangle, characterX * TileSize);
+                Canvas.SetTop(CharacterRectangle, characterY * TileSize);
 
-                    Canvas.SetLeft(CharacterRectangle, characterX * TileSize);
-                    Canvas.SetTop(CharacterRectangle, characterY * TileSize);
-                }
+                Canvas.SetZIndex(CharacterRectangle, int.MaxValue); // Вывод поверх остальных элементов
             }
+        }
 
-            private bool Collision(int x, int y)
+
+        private bool Collision(int x, int y)
             {
                 foreach (Rectangle tile in tilesList)
                 {

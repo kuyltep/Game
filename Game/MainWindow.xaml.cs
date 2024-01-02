@@ -25,43 +25,50 @@ namespace Game
             GenerateMap(gameCanvas);
 
         }
-            private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
+        private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
 
-            private const int MapWidth = 300;    // Ширина карты в тайлах
-            private const int MapHeight = 100;  // Высота карты в тайлах
-            private const int TileSize = 8;    // Размер тайла
-            public void GenerateMap(Canvas gameCanvas)          // Стартуем
-            {                                                   // Генерация рандомных комнат
-                Random rand = new Random();
-                int numRooms = rand.Next(40, 50);               // Сколько комнат добавить?
-                List<Point> roomCenters = new List<Point>();    // Создает список точек для хранения центральных точек комнаты
-
-                for (int i = 0; i < numRooms; i++)// Комната
+        private const int MapWidth = 300;    // Ширина карты в тайлах
+        private const int MapHeight = 100;  // Высота карты в тайлах
+        private const int TileSize = 8;    // Размер тайла
+        public void GenerateMap(Canvas gameCanvas)          // Стартуем
+        {                                                   // Генерация рандомных комнат
+            Random rand = new Random();
+            int numRooms = rand.Next(40, 50);               // Сколько комнат добавить?
+            List<Point> roomCenters = new List<Point>();    // Создает список точек для хранения центральных точек комнаты
+            for (int i = 0; i < MapWidth; i++)
+            {
+                for (int j = 0; j < MapHeight; j++)
                 {
-                    int roomWidth = rand.Next(6, 10);// Рандомная Ширина
-                    int roomHeight = rand.Next(6, 10);// Рандомная Высота
-                    int roomX = rand.Next(0, MapWidth - roomWidth);// X
-                    int roomY = rand.Next(0, MapHeight - roomHeight);// Y
+                    DrawTileV(i, j, new SolidColorBrush(Colors.Red)); // Рисует тайл в позиции (i, j) красного цвета
+                }
+            }
 
-                    bool overlap = roomCenters.Any(Room1 =>
-                    Math.Abs(Room1.X - (roomX + roomWidth / 2)) < (roomWidth + TileSize) / 2 &&
-                    Math.Abs(Room1.Y - (roomY + roomHeight / 2)) < (roomHeight + TileSize) / 2);
+            for (int i = 0; i < numRooms; i++)// Комната
+           {
+               int roomWidth = rand.Next(6, 10);// Рандомная Ширина
+               int roomHeight = rand.Next(6, 10);// Рандомная Высота
+               int roomX = rand.Next(0, MapWidth - roomWidth);// X
+               int roomY = rand.Next(0, MapHeight - roomHeight);// Y
 
-                    if (!overlap)
-                    {
-                        roomCenters.Add(new Point(roomX + roomWidth / 2, roomY + roomHeight / 2));
-                    }
-                    else
-                    {
-                        i--;
-                    }
+               bool overlap = roomCenters.Any(Room1 =>
+               Math.Abs(Room1.X - (roomX + roomWidth / 2)) < (roomWidth + TileSize) / 2 &&
+               Math.Abs(Room1.Y - (roomY + roomHeight / 2)) < (roomHeight + TileSize) / 2);
+
+               if (!overlap)
+               {
+                   roomCenters.Add(new Point(roomX + roomWidth / 2, roomY + roomHeight / 2));
+               }
+               else
+               {
+                   i--;
+               }
 
                 }
                 for (int i = 0; i < roomCenters.Count - 1; i++)
                 {
                     ConnectRooms(roomCenters[i], roomCenters[i + 1]);
                 }
-                for (int i = 0; i < numRooms; i++)// Теперь рисуем комнаты и их границы
+                for (int i = 0; i < numRooms; i++)// Рисуем комнаты и их границы
                 {
                     int roomWidth = rand.Next(6, 10);// Рандомная Ширина
                     int roomHeight = rand.Next(6, 10);// Рандомная высота
@@ -86,7 +93,7 @@ namespace Game
                 {
                     for (int i = x; i < x + width; i++)
                     {
-                        DrawTileV(i, y, new SolidColorBrush(Colors.LightGray));// Граница верхняя
+                        DrawTile(i, y, new SolidColorBrush(Colors.LightGray));// Граница верхняя
                         DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightGray));// Граница нижняя
                         DrawTile(i, y + height, new SolidColorBrush(Colors.Gray));// Дополнительный слой тайлов под нижней границей
                     }

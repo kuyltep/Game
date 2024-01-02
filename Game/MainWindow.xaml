@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" KeyDown="mainWindow_KeyDown">
     <Canvas x:Name="gameCanvas">
-        <Rectangle x:Name="CharacterRectangle" Height="8" Canvas.Left="0" Stroke="Black" Canvas.Top="0" Width="8"/>
+        <Rectangle x:Name="CharacterRectangle" Height="24" Fill="White" Canvas.Left="0" Stroke="Black" Canvas.Top="0" Width="24"/>
     </Canvas>
 </Window>

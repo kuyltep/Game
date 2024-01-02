@@ -35,11 +35,12 @@ namespace Game
             Random rand = new Random();
             int numRooms = rand.Next(40, 50);               // Сколько комнат добавить?
             List<Point> roomCenters = new List<Point>();    // Создает список точек для хранения центральных точек комнаты
+
             for (int i = 0; i < MapWidth; i++)
             {
                 for (int j = 0; j < MapHeight; j++)
                 {
-                    DrawTileV(i, j, new SolidColorBrush(Colors.Red)); // Рисует тайл в позиции (i, j) красного цвета
+                    DrawTileV(i, j, new ImageBrush(new BitmapImage(new Uri("Image/qwe.png", UriKind.Relative))));
                 }
             }
 
@@ -51,8 +52,8 @@ namespace Game
                 int roomY = rand.Next(0, MapHeight - roomHeight);// Y
 
                 bool overlap = roomCenters.Any(Room1 =>
-                Math.Abs(Room1.X - (roomX + roomWidth / 2)) < (roomWidth + TileSize) / 2 &&
-                Math.Abs(Room1.Y - (roomY + roomHeight / 2)) < (roomHeight + TileSize) / 2);
+                    Math.Abs(Room1.X - (roomX + roomWidth / 2)) < (roomWidth + TileSize) / 2 &&
+                    Math.Abs(Room1.Y - (roomY + roomHeight / 2)) < (roomHeight + TileSize) / 2);
 
                 if (!overlap)
                 {
@@ -62,12 +63,13 @@ namespace Game
                 {
                     i--;
                 }
-
             }
+
             for (int i = 0; i < roomCenters.Count - 1; i++)
             {
                 ConnectRooms(roomCenters[i], roomCenters[i + 1]);
             }
+
             for (int i = 0; i < numRooms; i++)// Рисуем комнаты и их границы
             {
                 int roomWidth = rand.Next(6, 10);// Рандомная Ширина
@@ -93,28 +95,47 @@ namespace Game
             {
                 for (int i = x; i < x + width; i++)
                 {
-                    DrawTile(i, y, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_1.png", UriKind.Relative))));// Граница верхняя
-                    DrawTile(i, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_6.png", UriKind.Relative))));// Граница нижняя
-                    DrawTile(i, y + height, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1.png", UriKind.Relative))));// Дополнительный слой тайлов под нижней границей
+                    DrawTile(i, y, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_1.png", UriKind.Relative))));                          // Граница верхняя
+                    DrawTile(i, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_6.png", UriKind.Relative))));             // Граница нижняя
+                    DrawTile(i, y + height, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1.png", UriKind.Relative))));                   // Дополнительный слой тайлов под нижней границей
                 }
 
                 for (int j = y; j < y + height; j++)
                 {
-                    DrawTile(x, j, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_7.png", UriKind.Relative))));// Граница левая
-                    DrawTile(x + width - 1, j, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_8.png", UriKind.Relative))));// Граница правая
+                    DrawTile(x, j, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_7.png", UriKind.Relative))));                          // Граница левая
+                    DrawTile(x + width - 1, j, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_8.png", UriKind.Relative))));              // Граница правая
                 }
 
-                DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_3.png", UriKind.Relative))));// Верхний левый угол
-                DrawTile(x + width - 1, y, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_5.png", UriKind.Relative))));// Верхний правый угол
-                DrawTile(x, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_9.png", UriKind.Relative))));// Нижний левый угол
-                DrawTile(x + width - 1, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_10.png", UriKind.Relative))));// Нижний правый угол
+                DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_3.png", UriKind.Relative))));                              // Верхний левый угол
+                DrawTile(x + width - 1, y, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_5.png", UriKind.Relative))));                  // Верхний правый угол
+                DrawTile(x, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_9.png", UriKind.Relative))));                 // Нижний левый угол
+                DrawTile(x + width - 1, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1_10.png", UriKind.Relative))));    // Нижний правый угол
+
+                int floor = rand.Next(2); // Выбор случайного варианта пола
+                ImageBrush floorBrush = null;
+
+                switch (floor)
+                {
+                    case 0:
+                        floorBrush = new ImageBrush(new BitmapImage(new Uri("Image/floor/qwer.png", UriKind.Relative)));
+                        break;
+                    case 1:
+                        floorBrush = new ImageBrush(new BitmapImage(new Uri("Image/floor/qwert.png", UriKind.Relative)));
+                        break;
+                    default:
+                        break;
+                }
 
                 for (int i = x + 1; i < x + width - 1; i++) // Заполнить внутренности комнаты
                 {
                     for (int j = y + 1; j < y + height - 1; j++)
                     {
-                        DrawTileV(i, j, (j == y + 1) ? new SolidColorBrush(Colors.Gray) : Brushes.Beige);
+                        DrawTileV(i, j, floorBrush); // Рисование плитки пола
                     }
+                }
+                for (int i = x + 1; i < x + width - 1; i++)
+                {
+                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room1/Wall1.png", UriKind.Relative)))); // Например, добавление строки стены чуть ниже верхней границы
                 }
 
                 int randomWall = rand.Next(4);
@@ -147,30 +168,48 @@ namespace Game
             {
                 for (int i = x; i < x + width; i++)
                 {
-                    DrawTile(i, y, new SolidColorBrush(Colors.LightBlue));
-                    DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightBlue));
-                    DrawTile(i, y + height, new SolidColorBrush(Colors.Blue));
+                    DrawTile(i, y, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_1.png", UriKind.Relative))));
+                    DrawTile(i, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_3.png", UriKind.Relative))));
+                    DrawTile(i, y + height, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2.png", UriKind.Relative))));
                 }
 
                 for (int j = y; j < y + height; j++)
                 {
-                    DrawTile(x, j, new SolidColorBrush(Colors.LightBlue));
-                    DrawTile(x + width - 1, j, new SolidColorBrush(Colors.LightBlue));
+                    DrawTile(x, j, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_4.png", UriKind.Relative))));
+                    DrawTile(x + width - 1, j, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_5.png", UriKind.Relative))));
                 }
 
-                DrawTile(x, y, new SolidColorBrush(Colors.Blue));
-                DrawTile(x + width - 1, y, new SolidColorBrush(Colors.Blue));
-                DrawTile(x, y + height - 1, new SolidColorBrush(Colors.Blue));
-                DrawTile(x + width - 1, y + height - 1, new SolidColorBrush(Colors.Blue));
+                DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_6.png", UriKind.Relative))));
+                DrawTile(x + width - 1, y, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_7.png", UriKind.Relative))));
+                DrawTile(x, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_9.png", UriKind.Relative))));
+                DrawTile(x + width - 1, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2_8.png", UriKind.Relative))));
+
+                int floor = rand.Next(2); // Выбор случайного варианта пола
+                ImageBrush floorBrush = null;
+
+                switch (floor)
+                {
+                    case 0:
+                        floorBrush = new ImageBrush(new BitmapImage(new Uri("Image/floor/qwer.png", UriKind.Relative)));
+                        break;
+                    case 1:
+                        floorBrush = new ImageBrush(new BitmapImage(new Uri("Image/floor/qwert.png", UriKind.Relative)));
+                        break;
+                    default:
+                        break;
+                }
 
                 for (int i = x + 1; i < x + width - 1; i++) // Заполнить внутренности комнаты
                 {
                     for (int j = y + 1; j < y + height - 1; j++)
                     {
-                        DrawTile(i, j, (j == y + 1) ? new SolidColorBrush(Colors.Blue) : Brushes.Beige);
+                        DrawTileV(i, j, floorBrush); // Рисование плитки пола
                     }
                 }
-
+                for (int i = x + 1; i < x + width - 1; i++)
+                {
+                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2.png", UriKind.Relative)))); // Например, добавление строки стены чуть ниже верхней границы
+                }
                 int randomWall = rand.Next(4);
 
                 switch (randomWall)
@@ -201,21 +240,21 @@ namespace Game
             {
                 for (int i = x; i < x + width; i++)
                 {
-                    DrawTile(i, y, new SolidColorBrush(Colors.LightGreen));
-                    DrawTile(i, y + height - 1, new SolidColorBrush(Colors.LightGreen));
-                    DrawTile(i, y + height, new SolidColorBrush(Colors.Green));
+                    DrawTile(i, y, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_1.png", UriKind.Relative))));
+                    DrawTile(i, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_2.png", UriKind.Relative))));
+                    DrawTile(i, y + height, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3.png", UriKind.Relative))));
                 }
 
                 for (int j = y; j < y + height; j++)
                 {
-                    DrawTile(x, j, new SolidColorBrush(Colors.LightGreen));
-                    DrawTile(x + width - 1, j, new SolidColorBrush(Colors.LightGreen));
+                    DrawTile(x, j, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_3.png", UriKind.Relative))));
+                    DrawTile(x + width - 1, j, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_4.png", UriKind.Relative))));
                 }
 
-                DrawTile(x, y, new SolidColorBrush(Colors.Green));
-                DrawTile(x + width - 1, y, new SolidColorBrush(Colors.Green));
-                DrawTile(x, y + height - 1, new SolidColorBrush(Colors.Green));
-                DrawTile(x + width - 1, y + height - 1, new SolidColorBrush(Colors.Green));
+                DrawTile(x, y, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_8.png", UriKind.Relative))));
+                DrawTile(x + width - 1, y, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_5.png", UriKind.Relative))));
+                DrawTile(x, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_7.png", UriKind.Relative))));
+                DrawTile(x + width - 1, y + height - 1, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3_6.png", UriKind.Relative))));
 
                 for (int i = x + 1; i < x + width - 1; i++) // Заполнить внутренности комнаты
                 {
@@ -223,6 +262,33 @@ namespace Game
                     {
                         DrawTile(i, j, (j == y + 1) ? new SolidColorBrush(Colors.Green) : Brushes.Beige);
                     }
+                }
+
+                int floor = rand.Next(2); // Выбор случайного варианта пола
+                ImageBrush floorBrush = null;
+
+                switch (floor)
+                {
+                    case 0:
+                        floorBrush = new ImageBrush(new BitmapImage(new Uri("Image/floor/qwer.png", UriKind.Relative)));
+                        break;
+                    case 1:
+                        floorBrush = new ImageBrush(new BitmapImage(new Uri("Image/floor/qwert.png", UriKind.Relative)));
+                        break;
+                    default:
+                        break;
+                }
+
+                for (int i = x + 1; i < x + width - 1; i++) // Заполнить внутренности комнаты
+                {
+                    for (int j = y + 1; j < y + height - 1; j++)
+                    {
+                        DrawTileV(i, j, floorBrush); // Рисование плитки пола
+                    }
+                }
+                for (int i = x + 1; i < x + width - 1; i++)
+                {
+                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3.png", UriKind.Relative)))); // Например, добавление строки стены чуть ниже верхней границы
                 }
 
                 int randomWall = rand.Next(4);

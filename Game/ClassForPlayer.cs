@@ -26,6 +26,7 @@ namespace Game
 
         private List<(Rectangle bullet, int direction)> bullets = new List<(Rectangle, int)>();
         private DispatcherTimer bulletTimer = new DispatcherTimer();
+        private List<int> bulletDistance = new List<int>();
         public int direction = 1;
 
         public static bool CheckRectangleIntersection(Rectangle rect1, Rectangle rect2)
@@ -62,12 +63,14 @@ namespace Game
                 double bulletTop = Canvas.GetTop(bullet);
                 double bulletBottom = bulletTop + bullet.Height;
                 Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + 5 * direction); // Скорость полета пули, умноженная на направление
+                bulletDistance[i] += 5;
 
                 // Удаление пули, если она преодолела расстояние 200 пикселей
-                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= 200 || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= 200 || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth)
+                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= 200 || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= 200 || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth || bulletDistance[i] >= 200)
                 {
                     gameCanvas.Children.Remove(bullet);
                     bullets.RemoveAt(i);
+                    bulletDistance.RemoveAt(i);
                 }
             for (int j = enemies.Count - 1; j >= 0; j--)
             {
@@ -100,6 +103,7 @@ namespace Game
 
         public void MouseDown (object sender, MouseEventArgs e, Canvas gameCanvas, Grid GameCanvas, Image hero)
         {
+            int distance = 0;
             var bullet = new Rectangle
             {
                 Width = 6,
@@ -118,6 +122,7 @@ namespace Game
                 Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2); // Начальная позиция пули по оси Y
             }
             bullets.Add((bullet, direction));
+            bulletDistance.Add(distance);
 
             if (!bulletTimer.IsEnabled)
             {

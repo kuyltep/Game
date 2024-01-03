@@ -47,6 +47,10 @@ namespace Game
         private DispatcherTimer bulletTimer = new DispatcherTimer();
         private List<int> bulletDistance = new List<int>();
         public int direction = 1;
+
+        private const int MapWidth = 300;    // Ширина карты в тайлах
+        private const int MapHeight = 100;  // Высота карты в тайлах
+        private const int TileSize = 24;    // Размер тайла
         public MainWindow()
         {
             InitializeComponent();
@@ -548,13 +552,32 @@ namespace Game
         }
 
 
+        private void RandomGenerationItems(int itemsCount)
+        {
+            for(int  i = 0; i <= itemsCount; i++)
+            {
+                //Рандомная генерация предметов на карте, но не работает то, что они должны добавляться в центр комнаты
 
+                int index = randomItem.Next(0, items.Length);
+                Image itemImage = new Image();
+                BitmapImage item = new BitmapImage();
+                item.BeginInit();
+                item.UriSource = new Uri($"images/items/{items[index]}.png", UriKind.Relative);
+                item.EndInit();
+                itemImage.Source = item;
+                itemImage.Width = 20;
+                itemImage.Height = 20;
+                itemImage.Margin = new Thickness(randomItem.Next(0, MapWidth * TileSize / 2), randomItem.Next(0, MapHeight * TileSize / 2), 0, 0);
+                itemsImages.Add((itemImage, items[index]));
+                gameCanvas.Children.Add(itemImage);
+            }
+        }
         public void InitializeGame(Image hero, Grid GameCanvas, int heroHealth, int heroArmor, string gunName)
         {
-
+            RandomGenerationItems(11);
             HeroRightSide(hero);
-            hero.Height = 20;
-            hero.Width = 20;
+            hero.Height = 25;
+            hero.Width = 25;
             hero.VerticalAlignment = VerticalAlignment.Center;
             hero.HorizontalAlignment = HorizontalAlignment.Center;
             hero.Margin = new Thickness(0, 0, 0, 0);
@@ -657,9 +680,7 @@ namespace Game
         //**********************************************************************************************************************************************************
         private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
 
-        private const int MapWidth = 300;    // Ширина карты в тайлах
-        private const int MapHeight = 100;  // Высота карты в тайлах
-        private const int TileSize = 24;    // Размер тайла
+
         public void GenerateMap(Canvas gameCanvas)          // Стартуем
         {                                                   // Генерация рандомных комнат
             Random rand = new Random();
@@ -699,20 +720,7 @@ namespace Game
             {
                 ConnectRooms(roomCenters[i], roomCenters[i + 1]);
 
-                //Рандомная генерация предметов на карте, но не работает то, что они должны добавляться в центр комнаты
 
-                int index = randomItem.Next(0, items.Length);
-                Image itemImage = new Image();
-                BitmapImage item = new BitmapImage();
-                item.BeginInit();
-                item.UriSource = new Uri($"images/items/{items[index]}.png", UriKind.Relative);
-                item.EndInit();
-                itemImage.Source = item;
-                itemImage.Width = 12;
-                itemImage.Height = 12;
-                itemImage.Margin = new Thickness(randomItem.Next(0, Convert.ToInt32(Math.Floor(gameCanvas.ActualWidth))), randomItem.Next(0, Convert.ToInt32(Math.Floor(gameCanvas.ActualHeight))), 0, 0);
-                itemsImages.Add((itemImage, items[index]));
-                gameCanvas.Children.Add(itemImage);
             }
 
             for (int i = 0; i < numRooms; i++)// Рисуем комнаты и их границы
@@ -1011,21 +1019,20 @@ namespace Game
             }
         }
 
-
+        private int chaacterx = 0;
+        private int chaactery = 0;
         private void MoveCharacter(int X, int Y)
         {
-            int CharacterX1 = heroLeft + X;
-            int CharacterY1 = heroTop + Y;
+            int CharacterX1 = chaacterx + X;
+            int CharacterY1 = chaactery + Y;
 
             if (!Collision(CharacterX1, CharacterY1))
             {
-                heroLeft = CharacterX1;
-                heroTop = CharacterY1;
+                chaacterx = CharacterX1;
+                chaactery = CharacterY1;
 
-                Canvas.SetLeft(hero, heroLeft * TileSize);
-                Canvas.SetTop(hero, heroTop * TileSize);
 
-                Canvas.SetZIndex(hero, int.MaxValue); // Вывод поверх остальных элементов
+                GameCanvas.Margin = new Thickness(chaacterx * TileSize, chaactery * TileSize, 0, 0);
             }
         }
 

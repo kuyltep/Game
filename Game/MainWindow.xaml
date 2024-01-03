@@ -11,9 +11,9 @@
         
     <Grid x:Name="Game" Visibility="Hidden">
         <Canvas x:Name="gameCanvas">
-                <Grid x:Name="GameCanvas" Width="100" Height="50"></Grid>
         </Canvas>
-    </Grid>
+            <Grid x:Name="GameCanvas"  Width="150" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="2"/>
+        </Grid>
     <Grid x:Name="MainMenu" Visibility="Visible">
             <Grid.Background>
                 <ImageBrush ImageSource="images/2.png"/>

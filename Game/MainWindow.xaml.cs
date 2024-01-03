@@ -55,6 +55,7 @@ namespace Game
         {
             InitializeComponent();
             GenerateMap(gameCanvas);
+            Light();
 
         }
 
@@ -1052,6 +1053,34 @@ namespace Game
             return false;
         }
 
+        private void Light()
+        {
+            RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
+            
+            EllipseGeometry circleGeometry = new EllipseGeometry(new Point(50, 50), 60, 60);
 
+            GeometryGroup combination = new GeometryGroup();
+            combination.Children.Add(squareGeometry);
+            combination.Children.Add(circleGeometry);
+
+            combination.FillRule = FillRule.EvenOdd;
+
+            Path path = new Path();
+            path.Data = combination;
+
+            path.Effect = new BlurEffect
+            {
+                Radius = 50
+            };
+
+            path.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
+            lightCanvas.Children.Add(path);
+            if (circleGeometry != null)
+            {
+                Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
+                circleGeometry.Center = heromove;
+                lightCanvas.InvalidateVisual();
+            }
+        }
     }
 }

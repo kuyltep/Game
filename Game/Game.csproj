@@ -99,35 +99,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="bin\Debug\images\2.png" />
-    <Resource Include="bin\Debug\images\armor\0arm.png" />
-    <Resource Include="bin\Debug\images\armor\1arm.png" />
-    <Resource Include="bin\Debug\images\armor\2arm.png" />
-    <Resource Include="bin\Debug\images\armor\3arm.png" />
-    <Resource Include="bin\Debug\images\first-punk.png" />
-    <Resource Include="bin\Debug\images\guns\GreenGunLeft.png" />
-    <Resource Include="bin\Debug\images\guns\GreenGunRight.png" />
-    <Resource Include="bin\Debug\images\guns\GuitarLeft.png" />
-    <Resource Include="bin\Debug\images\guns\GuitarRight.png" />
-    <Resource Include="bin\Debug\images\guns\MegagunLeft.png" />
-    <Resource Include="bin\Debug\images\guns\MegagunRight.png" />
-    <Resource Include="bin\Debug\images\guns\RedGunLeft.png" />
-    <Resource Include="bin\Debug\images\guns\RedGunRight.png" />
-    <Resource Include="bin\Debug\images\guns\StartGunLeft.png" />
-    <Resource Include="bin\Debug\images\guns\StartGunRight.png" />
-    <Resource Include="bin\Debug\images\heroLeftSide.png" />
-    <Resource Include="bin\Debug\images\heroRightSide.png" />
-    <Resource Include="bin\Debug\images\hp\0hp.png" />
-    <Resource Include="bin\Debug\images\hp\1hp.png" />
-    <Resource Include="bin\Debug\images\hp\2hp.png" />
-    <Resource Include="bin\Debug\images\hp\3hp.png" />
-    <Resource Include="bin\Debug\images\hp\4hp.png" />
-    <Resource Include="bin\Debug\images\items\book.png" />
-    <Resource Include="bin\Debug\images\items\drink.png" />
-    <Resource Include="bin\Debug\images\items\eye.png" />
-    <Resource Include="bin\Debug\images\items\hearth.png" />
-    <Resource Include="bin\Debug\images\items\stew.png" />
-    <Resource Include="bin\Debug\images\second-punk.jpg" />
     <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +137,35 @@
     <Resource Include="bin\Debug\Image\Room3\Wall3_8.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\2.png" />
+    <Resource Include="images\armor\0arm.png" />
+    <Resource Include="images\armor\1arm.png" />
+    <Resource Include="images\armor\2arm.png" />
+    <Resource Include="images\armor\3arm.png" />
+    <Resource Include="images\first-punk.png" />
+    <Resource Include="images\guns\GreenGunLeft.png" />
+    <Resource Include="images\guns\GreenGunRight.png" />
+    <Resource Include="images\guns\GuitarLeft.png" />
+    <Resource Include="images\guns\GuitarRight.png" />
+    <Resource Include="images\guns\MegagunLeft.png" />
+    <Resource Include="images\guns\MegagunRight.png" />
+    <Resource Include="images\guns\RedGunLeft.png" />
+    <Resource Include="images\guns\RedGunRight.png" />
+    <Resource Include="images\guns\StartGunLeft.png" />
+    <Resource Include="images\guns\StartGunRight.png" />
+    <Resource Include="images\heroLeftSide.png" />
+    <Resource Include="images\heroRightSide.png" />
+    <Resource Include="images\hp\0hp.png" />
+    <Resource Include="images\hp\1hp.png" />
+    <Resource Include="images\hp\2hp.png" />
+    <Resource Include="images\hp\3hp.png" />
+    <Resource Include="images\hp\4hp.png" />
+    <Resource Include="images\items\book.png" />
+    <Resource Include="images\items\drink.png" />
+    <Resource Include="images\items\eye.png" />
+    <Resource Include="images\items\hearth.png" />
+    <Resource Include="images\items\stew.png" />
+    <Resource Include="images\second-punk.jpg" />
     <Resource Include="2.png" />
     <Content Include="bin\Debug\sounds\music.mp3" />
   </ItemGroup>

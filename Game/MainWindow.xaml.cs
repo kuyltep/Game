@@ -82,7 +82,7 @@ namespace Game
             Image first_image = new Image();
             BitmapImage first = new BitmapImage();
             first.BeginInit();
-            first.UriSource = new Uri(@"images/first-punk.png", UriKind.Relative);
+            first.UriSource = new Uri("images/first-punk.png", UriKind.Relative);
             first.EndInit();
             first_image.Source = first;
             first_image.Width = 180;

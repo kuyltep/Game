@@ -82,7 +82,7 @@ namespace Game
             Image first_image = new Image();
             BitmapImage first = new BitmapImage();
             first.BeginInit();
-            first.UriSource = new Uri("images/first-punk.png", UriKind.Relative);
+            first.UriSource = new Uri(@"images/first-punk.png", UriKind.Relative);
             first.EndInit();
             first_image.Source = first;
             first_image.Width = 180;
@@ -95,7 +95,7 @@ namespace Game
             Image second_image = new Image();
             BitmapImage second = new BitmapImage();
             second.BeginInit();
-            second.UriSource = new Uri("images/second-punk.jpg", UriKind.Relative);
+            second.UriSource = new Uri(@"images/second-punk.jpg", UriKind.Relative);
             second.EndInit();
             second_image.Source = second;
             second_image.Width = 180;
@@ -518,7 +518,7 @@ namespace Game
         }
 
 
-        public void gameCanvas_MouseDown(object sender, MouseEventArgs e, Canvas gameCanvas, Grid GameCanvas, Image hero)
+        public void Window_MouseDown(object sender, MouseEventArgs e)
         {
             int distance = 0;
             var bullet = new Rectangle

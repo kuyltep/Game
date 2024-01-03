@@ -99,53 +99,75 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="images\2.png" />
-    <Resource Include="Image\Room1\Wall1.png" />
-    <Resource Include="Image\Room1\Wall1_1.png" />
-    <Resource Include="Image\Room1\Wall1_2.png" />
-    <Resource Include="Image\Room1\Wall1_3.png" />
-    <Resource Include="Image\Room1\Wall1_4.png" />
-    <Resource Include="Image\Room1\Wall1_5.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="bin\Debug\images\2.png" />
+    <Resource Include="bin\Debug\images\armor\0arm.png" />
+    <Resource Include="bin\Debug\images\armor\1arm.png" />
+    <Resource Include="bin\Debug\images\armor\2arm.png" />
+    <Resource Include="bin\Debug\images\armor\3arm.png" />
+    <Resource Include="bin\Debug\images\first-punk.png" />
+    <Resource Include="bin\Debug\images\guns\GreenGunLeft.png" />
+    <Resource Include="bin\Debug\images\guns\GreenGunRight.png" />
+    <Resource Include="bin\Debug\images\guns\GuitarLeft.png" />
+    <Resource Include="bin\Debug\images\guns\GuitarRight.png" />
+    <Resource Include="bin\Debug\images\guns\MegagunLeft.png" />
+    <Resource Include="bin\Debug\images\guns\MegagunRight.png" />
+    <Resource Include="bin\Debug\images\guns\RedGunLeft.png" />
+    <Resource Include="bin\Debug\images\guns\RedGunRight.png" />
+    <Resource Include="bin\Debug\images\guns\StartGunLeft.png" />
+    <Resource Include="bin\Debug\images\guns\StartGunRight.png" />
+    <Resource Include="bin\Debug\images\heroLeftSide.png" />
+    <Resource Include="bin\Debug\images\heroRightSide.png" />
+    <Resource Include="bin\Debug\images\hp\0hp.png" />
+    <Resource Include="bin\Debug\images\hp\1hp.png" />
+    <Resource Include="bin\Debug\images\hp\2hp.png" />
+    <Resource Include="bin\Debug\images\hp\3hp.png" />
+    <Resource Include="bin\Debug\images\hp\4hp.png" />
+    <Resource Include="bin\Debug\images\items\book.png" />
+    <Resource Include="bin\Debug\images\items\drink.png" />
+    <Resource Include="bin\Debug\images\items\eye.png" />
+    <Resource Include="bin\Debug\images\items\hearth.png" />
+    <Resource Include="bin\Debug\images\items\stew.png" />
+    <Resource Include="bin\Debug\images\second-punk.jpg" />
     <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\Floor\qwer.png" />
-    <Resource Include="Image\Floor\qwert.png" />
+    <Resource Include="bin\Debug\Image\Floor\qwer.png" />
+    <Resource Include="bin\Debug\Image\Floor\qwert.png" />
+    <Resource Include="bin\Debug\Image\qwe.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_1.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_10.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_2.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_3.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_4.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_5.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_6.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_7.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_8.png" />
+    <Resource Include="bin\Debug\Image\Room1\Wall1_9.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_1.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_2.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_3.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_4.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_5.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_6.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_7.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_8.png" />
+    <Resource Include="bin\Debug\Image\Room2\Wall2_9.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_1.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_2.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_3.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_4.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_5.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_6.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_7.png" />
+    <Resource Include="bin\Debug\Image\Room3\Wall3_8.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\Room1\Wall1_10.png" />
-    <Resource Include="Image\Room1\Wall1_6.png" />
-    <Resource Include="Image\Room1\Wall1_7.png" />
-    <Resource Include="Image\Room1\Wall1_8.png" />
-    <Resource Include="Image\Room1\Wall1_9.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\Room2\Wall2.png" />
-    <Resource Include="Image\Room2\Wall2_1.png" />
-    <Resource Include="Image\Room2\Wall2_2.png" />
-    <Resource Include="Image\Room2\Wall2_3.png" />
-    <Resource Include="Image\Room2\Wall2_4.png" />
-    <Resource Include="Image\Room2\Wall2_5.png" />
-    <Resource Include="Image\Room2\Wall2_6.png" />
-    <Resource Include="Image\Room2\Wall2_7.png" />
-    <Resource Include="Image\Room2\Wall2_8.png" />
-    <Resource Include="Image\Room2\Wall2_9.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\Room3\Wall3.png" />
-    <Resource Include="Image\Room3\Wall3_1.png" />
-    <Resource Include="Image\Room3\Wall3_2.png" />
-    <Resource Include="Image\Room3\Wall3_3.png" />
-    <Resource Include="Image\Room3\Wall3_4.png" />
-    <Resource Include="Image\Room3\Wall3_5.png" />
-    <Resource Include="Image\Room3\Wall3_6.png" />
-    <Resource Include="Image\Room3\Wall3_7.png" />
-    <Resource Include="Image\Room3\Wall3_8.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\qwe.png" />
+    <Resource Include="2.png" />
+    <Content Include="bin\Debug\sounds\music.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

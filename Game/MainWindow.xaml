@@ -6,24 +6,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Game"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown" Loaded="Window_Loaded" MouseDown="Window_MouseDown">
     <Grid>
         
     <Grid x:Name="Game" Visibility="Hidden">
-        <Canvas x:Name="gameCanvas" MouseDown="gameCanvas_MouseDown">
+        <Canvas x:Name="gameCanvas">
                 <Grid x:Name="GameCanvas" Width="100" Height="50"></Grid>
         </Canvas>
     </Grid>
     <Grid x:Name="MainMenu" Visibility="Visible">
             <Grid.Background>
-                <ImageBrush ImageSource="images/2.png"/>
+                <ImageBrush ImageSource="/2.png"/>
             </Grid.Background>
         </Grid>
         <Grid x:Name="PauseMenu" Visibility="Hidden" Background="#B2000000" Panel.ZIndex="3"/>
         <Grid x:Name="PauseSettings" Visibility="Hidden" Background="#B2000000" Panel.ZIndex="3"/>
         <Grid x:Name="Settings" Visibility="Hidden" Panel.ZIndex="4">
             <Grid.Background>
-                <ImageBrush ImageSource="images/2.png"/>
+                <ImageBrush ImageSource="/2.png"/>
             </Grid.Background>
         </Grid>
     </Grid>

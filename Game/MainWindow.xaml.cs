@@ -13,18 +13,445 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Game
 {
     public partial class MainWindow : Window
     {
-
+        public bool isSettingsMenuOpen = false;
+        public bool isGameInitialize = false;
+        public int heroHealth = 3;
+        public int heroArmor = 3;
+        public int canvasLeft = 0;
+        public int canvasTop = 0;
+        public int heroLeft = 0;
+        public int heroTop = 0;
+        public bool isMusicOn = false;
+        private MediaPlayer _mpBgr;
+        private MediaPlayer _mpCurSound;
+        public Image hero = new Image();
+        public string gunName = "GreenGun";
+        public List<Rectangle> enemies = new List<Rectangle>();
+        List<(Image, string)> itemsImages = new List<(Image, string)>();
+        string[] items = { "book", "drink", "eye", "hearth", "stew" };
+        private DispatcherTimer enemyTimer = new DispatcherTimer();
+        Random random = new Random();
+        Random randomItem = new Random();
+        int itemsCount = 0;
         public MainWindow()
         {
             InitializeComponent();
             GenerateMap(gameCanvas);
 
         }
+
+        //*****************************************************************************************************************************************************
+        //Initializes menu methods
+        //При загрузке приложения вызываем методы для инициализации главного меню
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            InitializeMediaPlayer();
+            InitializeImages();
+            InitializeMainButtons();
+        }
+
+        //Метод для инициализации плеера при запуске игры 
+        public void InitializeMediaPlayer()
+        {
+            //Initialize music player
+            _mpBgr = new MediaPlayer();
+            _mpCurSound = new MediaPlayer();
+            _mpBgr.Open(new Uri(@"sounds\music.mp3", UriKind.Relative));
+            _mpBgr.Play();
+            isMusicOn = true;
+        }
+
+        //Метод для инициализации изображений на грид
+        public void InitializeImages()
+        {
+            //Initialize first image
+            Image first_image = new Image();
+            BitmapImage first = new BitmapImage();
+            first.BeginInit();
+            first.UriSource = new Uri("images/first-punk.png", UriKind.Relative);
+            first.EndInit();
+            first_image.Source = first;
+            first_image.Width = 180;
+            first_image.Height = 180;
+            first_image.VerticalAlignment = VerticalAlignment.Bottom;
+            first_image.HorizontalAlignment = HorizontalAlignment.Left;
+            MainMenu.Children.Add(first_image);
+
+            //Initialize second image
+            Image second_image = new Image();
+            BitmapImage second = new BitmapImage();
+            second.BeginInit();
+            second.UriSource = new Uri("images/second-punk.jpg", UriKind.Relative);
+            second.EndInit();
+            second_image.Source = second;
+            second_image.Width = 180;
+            second_image.Height = 180;
+            second_image.VerticalAlignment = VerticalAlignment.Top;
+            second_image.HorizontalAlignment = HorizontalAlignment.Right;
+            MainMenu.Children.Add(second_image);
+
+        }
+        //Метод для инициализации кнопок главного меню на грид
+        public void InitializeMainButtons()
+        {
+            //Initialize play button
+            Button continueBtn = new Button();
+            continueBtn.FontFamily = new FontFamily("Wide Latin");
+            continueBtn.FontSize = 24;
+            continueBtn.Width = 330;
+            continueBtn.Height = 40;
+            continueBtn.Background = Brushes.LightGray;
+            continueBtn.Content = "Играть";
+            continueBtn.Click += play_Click;
+            continueBtn.HorizontalAlignment = HorizontalAlignment.Center;
+            continueBtn.VerticalAlignment = VerticalAlignment.Center;
+            continueBtn.Margin = new Thickness(0, 0, 0, 150);
+            MainMenu.Children.Add(continueBtn);
+            //Initialize settings button
+            Button settings = new Button();
+            settings.FontFamily = new FontFamily("Wide Latin");
+            settings.FontSize = 24;
+            settings.Width = 330;
+            settings.Height = 40;
+            settings.Background = Brushes.LightGray;
+            settings.Content = "Настройки";
+            settings.Click += settings_Click;
+            settings.HorizontalAlignment = HorizontalAlignment.Center;
+            settings.VerticalAlignment = VerticalAlignment.Center;
+            settings.Margin = new Thickness(0, 0, 0, 0);
+            MainMenu.Children.Add(settings);
+            //Initialize exit button
+            Button exitToMainMenu = new Button();
+            exitToMainMenu.FontFamily = new FontFamily("Wide Latin");
+            exitToMainMenu.FontSize = 24;
+            exitToMainMenu.Width = 330;
+            exitToMainMenu.Height = 40;
+            exitToMainMenu.Background = Brushes.LightGray;
+            exitToMainMenu.Content = "Выйти";
+            exitToMainMenu.Click += exit_Click;
+            exitToMainMenu.HorizontalAlignment = HorizontalAlignment.Center;
+            exitToMainMenu.VerticalAlignment = VerticalAlignment.Center;
+            exitToMainMenu.Margin = new Thickness(0, 150, 0, 0);
+            MainMenu.Children.Add(exitToMainMenu);
+        }
+        //Обработчик для кнопки начать игру в главном меню
+        private void play_Click(object sender, RoutedEventArgs e)
+        {
+            MainMenu.Visibility = Visibility.Hidden;
+            Game.Visibility = Visibility.Visible;
+            if (!isGameInitialize)
+            { 
+                //Добавить метод для инициализации игры!!!!!!!!!!!!!!!!!!!
+                //ClassForPlayer.InitializeGame(hero, GameCanvas, heroHealth, heroArmor, gunName);
+                isGameInitialize = true;
+            }
+        }
+        //Обработчик для кнопки настройки в главном меню
+        private void settings_Click(object sender, RoutedEventArgs e)
+        {
+            MainMenu.Visibility = Visibility.Hidden;
+            Settings.Visibility = Visibility.Visible;
+            if (!isSettingsMenuOpen)
+            {
+                InitializeSettingsButtons();
+                isSettingsMenuOpen = true;
+            }
+        }
+        //Обработчик для кнопки выход в главном меню
+        private void exit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+
+        //Метод для инициализации кнопок меню паузы в процессе игры
+        public void InitializePauseMenuButtons()
+        {
+            //Initialize play button
+            Button play = new Button();
+            play.FontFamily = new FontFamily("Wide Latin");
+            play.FontSize = 24;
+            play.Width = 330;
+            play.Height = 40;
+            play.Background = Brushes.LightGray;
+            play.Content = "Продолжить";
+            play.Click += playPauseMenu_Click;
+            play.HorizontalAlignment = HorizontalAlignment.Center;
+            play.VerticalAlignment = VerticalAlignment.Center;
+            play.Margin = new Thickness(0, 0, 0, 150);
+            PauseMenu.Children.Add(play);
+            //Initialize settings button
+            Button settingsBtnOnPauseMenu = new Button();
+            settingsBtnOnPauseMenu.FontFamily = new FontFamily("Wide Latin");
+            settingsBtnOnPauseMenu.FontSize = 24;
+            settingsBtnOnPauseMenu.Width = 330;
+            settingsBtnOnPauseMenu.Height = 40;
+            settingsBtnOnPauseMenu.Background = Brushes.LightGray;
+            settingsBtnOnPauseMenu.Content = "Настройки";
+            settingsBtnOnPauseMenu.Click += settingsPauseMenu_Click;
+            settingsBtnOnPauseMenu.HorizontalAlignment = HorizontalAlignment.Center;
+            settingsBtnOnPauseMenu.VerticalAlignment = VerticalAlignment.Center;
+            settingsBtnOnPauseMenu.Margin = new Thickness(0, 0, 0, 0);
+            PauseMenu.Children.Add(settingsBtnOnPauseMenu);
+            //Initialize exit button
+            Button exit = new Button();
+            exit.FontFamily = new FontFamily("Wide Latin");
+            exit.FontSize = 24;
+            exit.Width = 330;
+            exit.Height = 40;
+            exit.Background = Brushes.LightGray;
+            exit.Content = "В главное меню";
+            exit.Click += exitPauseMenu_Click;
+            exit.HorizontalAlignment = HorizontalAlignment.Center;
+            exit.VerticalAlignment = VerticalAlignment.Center;
+            exit.Margin = new Thickness(0, 150, 0, 0);
+            PauseMenu.Children.Add(exit);
+        }
+
+        //Метод для инициализации кнопок в меню настроек на главном гриде
+        public void InitializeSettingsButtons()
+        {
+            //Initialize musicOff button
+            Button musicOff = new Button();
+            musicOff.FontFamily = new FontFamily("Wide Latin");
+            musicOff.FontSize = 24;
+            musicOff.Width = 330;
+            musicOff.Height = 40;
+            musicOff.Background = Brushes.LightGray;
+            musicOff.Content = "Выключить музыку";
+            musicOff.Click += musicOff_Click;
+            musicOff.HorizontalAlignment = HorizontalAlignment.Center;
+            musicOff.VerticalAlignment = VerticalAlignment.Center;
+            musicOff.Margin = new Thickness(0, 0, 0, 150);
+            Settings.Children.Add(musicOff);
+            //Initialize musicOn button
+            Button musicOn = new Button();
+            musicOn.FontFamily = new FontFamily("Wide Latin");
+            musicOn.FontSize = 24;
+            musicOn.Width = 330;
+            musicOn.Height = 40;
+            musicOn.Background = Brushes.LightGray;
+            musicOn.Content = "Включить музыку";
+            musicOn.Click += musicOn_Click;
+            musicOn.HorizontalAlignment = HorizontalAlignment.Center;
+            musicOn.VerticalAlignment = VerticalAlignment.Center;
+            musicOn.Margin = new Thickness(0, 0, 0, 0);
+            Settings.Children.Add(musicOn);
+            //Initialize backToMainWindow button
+            Button backToMainWindow = new Button();
+            backToMainWindow.FontFamily = new FontFamily("Wide Latin");
+            backToMainWindow.FontSize = 24;
+            backToMainWindow.Width = 330;
+            backToMainWindow.Height = 40;
+            backToMainWindow.Background = Brushes.LightGray;
+            backToMainWindow.Content = "Назад";
+            backToMainWindow.Click += backToMainWindow_Click;
+            backToMainWindow.HorizontalAlignment = HorizontalAlignment.Center;
+            backToMainWindow.VerticalAlignment = VerticalAlignment.Center;
+            backToMainWindow.Margin = new Thickness(0, 150, 0, 0);
+            Settings.Children.Add(backToMainWindow);
+        }
+
+
+        //Метод для инициализации кнопок настройки в меню паузы
+        public void InitializePauseSettingsButtons()
+        {
+            //Initialize musicOff button
+            Button musicOff = new Button();
+            musicOff.FontFamily = new FontFamily("Wide Latin");
+            musicOff.FontSize = 24;
+            musicOff.Width = 330;
+            musicOff.Height = 40;
+            musicOff.Background = Brushes.LightGray;
+            musicOff.Content = "Выключить музыку";
+            musicOff.Click += musicOff_Click;
+            musicOff.HorizontalAlignment = HorizontalAlignment.Center;
+            musicOff.VerticalAlignment = VerticalAlignment.Center;
+            musicOff.Margin = new Thickness(0, 0, 0, 150);
+            PauseSettings.Children.Add(musicOff);
+            //Initialize musicOn button
+            Button musicOn = new Button();
+            musicOn.FontFamily = new FontFamily("Wide Latin");
+            musicOn.FontSize = 24;
+            musicOn.Width = 330;
+            musicOn.Height = 40;
+            musicOn.Background = Brushes.LightGray;
+            musicOn.Content = "Включить музыку";
+            musicOn.Click += musicOn_Click;
+            musicOn.HorizontalAlignment = HorizontalAlignment.Center;
+            musicOn.VerticalAlignment = VerticalAlignment.Center;
+            musicOn.Margin = new Thickness(0, 0, 0, 0);
+            PauseSettings.Children.Add(musicOn);
+            //Initialize backToMainWindow button
+            Button backToPauseMenu = new Button();
+            backToPauseMenu.FontFamily = new FontFamily("Wide Latin");
+            backToPauseMenu.FontSize = 24;
+            backToPauseMenu.Width = 330;
+            backToPauseMenu.Height = 40;
+            backToPauseMenu.Background = Brushes.LightGray;
+            backToPauseMenu.Content = "Назад";
+            backToPauseMenu.Click += backToPauseMenu_Click;
+            backToPauseMenu.HorizontalAlignment = HorizontalAlignment.Center;
+            backToPauseMenu.VerticalAlignment = VerticalAlignment.Center;
+            backToPauseMenu.Margin = new Thickness(0, 150, 0, 0);
+            PauseSettings.Children.Add(backToPauseMenu);
+        }
+
+        //Обработчик для кнопки включить музыку в меню настроек
+        private void musicOn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isMusicOn)
+            {
+                _mpBgr.Play();
+                isMusicOn = !isMusicOn;
+            }
+        }
+        //Обработчик для кнопки выключить музыку в меню настроек
+        private void musicOff_Click(object sender, RoutedEventArgs e)
+        {
+            if (isMusicOn)
+            {
+                _mpBgr.Pause();
+                isMusicOn = !isMusicOn;
+            }
+        }
+        //Обработчик для кнопки вернуться в главное меню
+        private void backToMainWindow_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Visibility = Visibility.Hidden;
+            MainMenu.Visibility = Visibility.Visible;
+
+        }
+
+        //Меню паузы в процессе игры
+        //Обработчик для кнопки продолжить игру в меню паузы
+        private void playPauseMenu_Click(object sender, RoutedEventArgs e)
+        {
+            PauseMenu.Visibility = Visibility.Hidden;
+
+        }
+
+        //Обработчик для кнопки настроек в меню паузы 
+        private void settingsPauseMenu_Click(Object sender, RoutedEventArgs e)
+        {
+            PauseMenu.Visibility = Visibility.Hidden;
+            PauseSettings.Visibility = Visibility.Visible;
+            InitializePauseSettingsButtons();
+        }
+        //Обработчик для кнопки в главное меню в меню паузы 
+        private void exitPauseMenu_Click(Object sender, RoutedEventArgs e)
+        {
+            PauseMenu.Visibility = Visibility.Hidden;
+            Game.Children.Clear();
+            MainMenu.Visibility = Visibility.Visible;
+            isGameInitialize = false;
+
+        }
+        //Обработчик для кнопки вернуться в меню паузы в меню настроек паузы
+        private void backToPauseMenu_Click(Object obj, RoutedEventArgs e)
+        {
+            PauseSettings.Visibility = Visibility.Hidden;
+            PauseMenu.Visibility = Visibility.Visible;
+        }
+
+        //Обработчик для нажатия клавиши для отображения меню 
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Game.Visibility == Visibility.Visible && Convert.ToString(e.Key) == "Escape")
+            {
+                if (PauseSettings.Visibility == Visibility.Visible || PauseMenu.Visibility == Visibility.Visible)
+                {
+                    PauseSettings.Visibility = Visibility.Hidden;
+                    PauseMenu.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    InitializePauseMenuButtons();
+                    PauseMenu.Visibility = Visibility.Visible;
+                }
+            }
+            if (Game.Visibility == Visibility.Visible)
+            {
+                switch (e.Key)
+                {
+                    case Key.Up:
+                        MoveCharacter(0, -1);
+                        break;
+                    case Key.Down:
+                        MoveCharacter(0, 1);
+                        break;
+                    case Key.Left:
+                        MoveCharacter(-1, 0);
+                        break;
+                    case Key.Right:
+                        MoveCharacter(1, 0);
+                        break;
+                    default:
+                        break;
+                }
+                /* Добавить свет для персонажа !!!!!!!!!!!!
+                ClassForPlayer.HeroMove(e, GameCanvas, Game, hero, gunName);
+                if (circleGeometry != null)
+                {
+                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
+                    circleGeometry.Center = heromove;
+                    lightCanvas.InvalidateVisual();
+                }
+                */
+            }
+
+        }
+        //**********************************************************************************************************************************************************
+
+
+        //********************************************************************************************************************************************************
+        //Инициализация игры и всей логики игры (персонаж, стрельба, враги)
+        public void InitializeEnemyTimer(Canvas gameCanvas)
+        {
+            enemyTimer.Interval = TimeSpan.FromSeconds(5); // Интервал появления новых врагов
+            enemyTimer.Tick += (sender, e) => EnemyTimer_Tick(sender, e, gameCanvas);
+            enemyTimer.Start();
+        }
+
+        private void EnemyTimer_Tick(object sender, EventArgs e, Canvas gameCanvas)
+        {
+            CreateEnemy(gameCanvas);
+        }
+
+        public void CreateEnemy(Canvas gameCanvas)
+        {
+
+            for (int i = 0; i < 6; i++)
+            {
+                Rectangle enemy = new Rectangle
+                {
+                    Width = 15,
+                    Height = 15,
+                    Fill = Brushes.Blue
+                };
+                gameCanvas.Children.Add(enemy);
+
+                double randomX = random.Next((int)(gameCanvas.ActualWidth - enemy.Width));
+                double randomY = random.Next((int)(gameCanvas.ActualHeight - enemy.Height));
+
+                Canvas.SetLeft(enemy, randomX);
+                Canvas.SetTop(enemy, randomY);
+                enemies.Add(enemy);
+            }
+        }
+
+
+        //***********************************************************************************************************************************************************
+
+
+
+        //**********************************************************************************************************************************************************
         private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
 
         private const int MapWidth = 300;    // Ширина карты в тайлах
@@ -68,6 +495,21 @@ namespace Game
             for (int i = 0; i < roomCenters.Count - 1; i++)
             {
                 ConnectRooms(roomCenters[i], roomCenters[i + 1]);
+
+                //Рандомная генерация предметов на карте, но не работает то, что они должны добавляться в центр комнаты
+
+                int index = randomItem.Next(0, items.Length);
+                Image itemImage = new Image();
+                BitmapImage item = new BitmapImage();
+                item.BeginInit();
+                item.UriSource = new Uri($"images/items/{items[index]}.png", UriKind.Relative);
+                item.EndInit();
+                itemImage.Source = item;
+                itemImage.Width = 12;
+                itemImage.Height = 12;
+                itemImage.Margin = new Thickness(randomItem.Next(0, Convert.ToInt32(Math.Floor(gameCanvas.ActualWidth))), randomItem.Next(0, Convert.ToInt32(Math.Floor(gameCanvas.ActualHeight))), 0, 0);
+                itemsImages.Add((itemImage, items[index]));
+                gameCanvas.Children.Add(itemImage);
             }
 
             for (int i = 0; i < numRooms; i++)// Рисуем комнаты и их границы
@@ -198,6 +640,7 @@ namespace Game
                     default:
                         break;
                 }
+
 
                 for (int i = x + 1; i < x + width - 1; i++) // Заполнить внутренности комнаты
                 {
@@ -377,10 +820,10 @@ namespace Game
                 characterX = CharacterX1;
                 characterY = CharacterY1;
 
-                Canvas.SetLeft(CharacterRectangle, characterX * TileSize);
-                Canvas.SetTop(CharacterRectangle, characterY * TileSize);
+                Canvas.SetLeft(hero, characterX * TileSize);
+                Canvas.SetTop(hero, characterY * TileSize);
 
-                Canvas.SetZIndex(CharacterRectangle, int.MaxValue); // Вывод поверх остальных элементов
+                Canvas.SetZIndex(hero, int.MaxValue); // Вывод поверх остальных элементов
             }
         }
 
@@ -400,25 +843,7 @@ namespace Game
             return false;
         }
 
-        private void mainWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.Up:
-                    MoveCharacter(0, -1);
-                    break;
-                case Key.Down:
-                    MoveCharacter(0, 1);
-                    break;
-                case Key.Left:
-                    MoveCharacter(-1, 0);
-                    break;
-                case Key.Right:
-                    MoveCharacter(1, 0);
-                    break;
-                default:
-                    break;
-            }
-        }
+ 
+
     }
 }

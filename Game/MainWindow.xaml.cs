@@ -28,6 +28,7 @@ namespace Game
         public int canvasTop = 0;
         public int heroLeft = 0;
         public int heroTop = 0;
+        private EllipseGeometry circleGeometry;
         public bool isMusicOn = false;
         private MediaPlayer _mpBgr;
         private MediaPlayer _mpCurSound;
@@ -56,6 +57,7 @@ namespace Game
         {
             InitializeComponent();
             GenerateMap(gameCanvas);
+            Light();
 
         }
 
@@ -1041,7 +1043,12 @@ namespace Game
                 chaacterx = CharacterX1;
                 chaactery = CharacterY1;
 
-
+                if (circleGeometry != null)
+                {
+                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
+                    circleGeometry.Center = heromove;
+                    lightCanvas.InvalidateVisual();
+                }
                 GameCanvas.Margin = new Thickness(chaacterx * TileSize / 2, chaactery * TileSize / 2, 0, 0);
             }
         }
@@ -1062,6 +1069,29 @@ namespace Game
             return false;
         }
 
+        private void Light()
+        {
+            RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
+            
+            circleGeometry = new EllipseGeometry(new Point(50, 50), 60, 60);
 
+            GeometryGroup combination = new GeometryGroup();
+            combination.Children.Add(squareGeometry);
+            combination.Children.Add(circleGeometry);
+
+            combination.FillRule = FillRule.EvenOdd;
+
+            Path path = new Path();
+            path.Data = combination;
+
+            path.Effect = new BlurEffect
+            {
+                Radius = 50
+            };
+
+            path.Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0));
+            lightCanvas.Children.Add(path);
+            
+        }
     }
 }

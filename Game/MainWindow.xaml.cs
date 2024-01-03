@@ -21,7 +21,8 @@ namespace Game
     {
         public bool isSettingsMenuOpen = false;
         public bool isGameInitialize = false;
-        public int heroHealth = 3;
+        public int heroHealth = 1;
+        public int heroMaxShootDistance = 200;
         public int heroArmor = 3;
         public int canvasLeft = 0;
         public int canvasTop = 0;
@@ -160,8 +161,9 @@ namespace Game
             if (!isGameInitialize)
             { 
                 //Добавить метод для инициализации игры!!!!!!!!!!!!!!!!!!!
-                InitializeGame(hero, GameCanvas, heroHealth, heroArmor, gunName);
+                InitializeGame(hero, GameCanvas, gameCanvas, enemies, heroHealth, heroArmor, gunName);
                 isGameInitialize = true;
+
             }
         }
         //Обработчик для кнопки настройки в главном меню
@@ -435,7 +437,7 @@ namespace Game
         //Инициализация игры и всей логики игры (персонаж, стрельба, враги)
         public void InitializeEnemyTimer(Canvas gameCanvas)
         {
-            enemyTimer.Interval = TimeSpan.FromSeconds(5); // Интервал появления новых врагов
+            enemyTimer.Interval = TimeSpan.FromSeconds(8); // Интервал появления новых врагов
             enemyTimer.Tick += (sender, e) => EnemyTimer_Tick(sender, e, gameCanvas);
             enemyTimer.Start();
         }
@@ -473,6 +475,22 @@ namespace Game
             bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas, enemies);
         }
 
+        public static bool CheckRectangleIntersection(Rectangle rect1, Rectangle rect2)
+        {
+            // Получаем границы прямоугольников
+            Rect bounds1 = GetBounds(rect1);
+            Rect bounds2 = GetBounds(rect2);
+
+            // Проверяем пересечение границ прямоугольников
+            return bounds1.IntersectsWith(bounds2);
+        }
+
+        // Метод для получения границ прямоугольника Rectangle
+        public static Rect GetBounds(Rectangle rectangle)
+        {
+            // Используем ActualWidth и ActualHeight для определения границ
+            return new Rect(Canvas.GetLeft(rectangle), Canvas.GetTop(rectangle), rectangle.ActualWidth, rectangle.ActualHeight);
+        }
 
         public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
         {
@@ -487,7 +505,7 @@ namespace Game
                 bulletDistance[i] += 5;
 
                 // Удаление пули, если она преодолела расстояние 200 пикселей
-                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= 200 || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= 200 || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth || bulletDistance[i] >= 200)
+                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= heroMaxShootDistance || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= heroMaxShootDistance || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth || bulletDistance[i] >= heroMaxShootDistance)
                 {
                     gameCanvas.Children.Remove(bullet);
                     bullets.RemoveAt(i);
@@ -496,24 +514,14 @@ namespace Game
                 for (int j = enemies.Count - 1; j >= 0; j--)
                 {
                     var enemy = enemies[j];
-
-                    // Получаем границы врага
-                    double enemyLeft = Canvas.GetLeft(enemy);
-                    double enemyRight = enemyLeft + enemy.Width;
-                    double enemyTop = Canvas.GetTop(enemy);
-                    double enemyBottom = enemyTop + enemy.Height;
-
-                    // Проверяем пересечение пули и врага
-                    bool isIntersect = false;//CheckRectangleIntersection(enemy, bullet);
-                    if (isIntersect)
+                    if (CheckRectangleIntersection(bullet, enemy))
                     {
-                        // Столкновение произошло - удаляем пулю и врага
+                        // Remove bullet and enemy
                         gameCanvas.Children.Remove(bullet);
-                        gameCanvas.Children.Remove(enemy);
-
                         bullets.RemoveAt(i);
-                        enemies.RemoveAt(j);
-                        break; // Прерываем проверку этой пули с оставшимися врагами
+                        gameCanvas.Children.Remove(enemy); 
+                        enemies.Remove(enemy);
+                        return; // No need to check other enemies
                     }
                 }
             }
@@ -572,7 +580,7 @@ namespace Game
                 gameCanvas.Children.Add(itemImage);
             }
         }
-        public void InitializeGame(Image hero, Grid GameCanvas, int heroHealth, int heroArmor, string gunName)
+        public void InitializeGame(Image hero, Grid GameCanvas, Canvas gameCanvas, List<Rectangle> enemies, int heroHealth, int heroArmor, string gunName)
         {
             RandomGenerationItems(11);
             HeroRightSide(hero);
@@ -586,6 +594,8 @@ namespace Game
             setLeftGun(gunName, GameCanvas);
             gunLeft.Visibility = Visibility.Hidden;
             HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
+            InitializeBulletTimer(gameCanvas, GameCanvas, enemies);
+            InitializeEnemyTimer(gameCanvas);
 
         }
 
@@ -1032,7 +1042,7 @@ namespace Game
                 chaactery = CharacterY1;
 
 
-                GameCanvas.Margin = new Thickness(chaacterx * TileSize, chaactery * TileSize, 0, 0);
+                GameCanvas.Margin = new Thickness(chaacterx * TileSize / 2, chaactery * TileSize / 2, 0, 0);
             }
         }
 
@@ -1044,7 +1054,7 @@ namespace Game
                 int tileX = (int)Canvas.GetLeft(tile) / TileSize;
                 int tileY = (int)Canvas.GetTop(tile) / TileSize;
 
-                if (tileX == x && tileY == y)
+                if (tileX <= x && tileY <= y)
                 {
                     return true;
                 }

@@ -8,13 +8,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown" Loaded="Window_Loaded" MouseDown="Window_MouseDown">
     <Grid>
-        
-    <Grid x:Name="Game" Visibility="Hidden">
-        <Canvas x:Name="gameCanvas">
-        </Canvas>
-            <Grid x:Name="GameCanvas"  Width="150" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="2"/>
+
+        <Grid x:Name="Game" Visibility="Hidden">
+            <Canvas x:Name="gameCanvas">
+            </Canvas>
+            <Grid x:Name="GameCanvas"  Width="40" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Panel.ZIndex="2" Background="#FFF60606"/>
         </Grid>
-    <Grid x:Name="MainMenu" Visibility="Visible">
+        <Grid x:Name="MainMenu" Visibility="Visible">
             <Grid.Background>
                 <ImageBrush ImageSource="images/2.png"/>
             </Grid.Background>

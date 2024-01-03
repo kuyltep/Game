@@ -99,6 +99,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\2.png" />
     <Resource Include="Image\Room1\Wall1.png" />
     <Resource Include="Image\Room1\Wall1_1.png" />
     <Resource Include="Image\Room1\Wall1_2.png" />
@@ -107,10 +108,44 @@
     <Resource Include="Image\Room1\Wall1_5.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="images\2.png" />
+    <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="icon.ico" />
+    <Resource Include="Image\Floor\qwer.png" />
+    <Resource Include="Image\Floor\qwert.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\Room1\Wall1_10.png" />
+    <Resource Include="Image\Room1\Wall1_6.png" />
+    <Resource Include="Image\Room1\Wall1_7.png" />
+    <Resource Include="Image\Room1\Wall1_8.png" />
+    <Resource Include="Image\Room1\Wall1_9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\Room2\Wall2.png" />
+    <Resource Include="Image\Room2\Wall2_1.png" />
+    <Resource Include="Image\Room2\Wall2_2.png" />
+    <Resource Include="Image\Room2\Wall2_3.png" />
+    <Resource Include="Image\Room2\Wall2_4.png" />
+    <Resource Include="Image\Room2\Wall2_5.png" />
+    <Resource Include="Image\Room2\Wall2_6.png" />
+    <Resource Include="Image\Room2\Wall2_7.png" />
+    <Resource Include="Image\Room2\Wall2_8.png" />
+    <Resource Include="Image\Room2\Wall2_9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\Room3\Wall3.png" />
+    <Resource Include="Image\Room3\Wall3_1.png" />
+    <Resource Include="Image\Room3\Wall3_2.png" />
+    <Resource Include="Image\Room3\Wall3_3.png" />
+    <Resource Include="Image\Room3\Wall3_4.png" />
+    <Resource Include="Image\Room3\Wall3_5.png" />
+    <Resource Include="Image\Room3\Wall3_6.png" />
+    <Resource Include="Image\Room3\Wall3_7.png" />
+    <Resource Include="Image\Room3\Wall3_8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\qwe.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

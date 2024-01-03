@@ -10,7 +10,8 @@
     <Grid>
         
     <Grid x:Name="Game" Visibility="Hidden">
-        <Canvas x:Name="gameCanvas">
+        <Canvas x:Name="gameCanvas" MouseDown="gameCanvas_MouseDown">
+                <Grid x:Name="GameCanvas" Width="100" Height="50"></Grid>
         </Canvas>
     </Grid>
     <Grid x:Name="MainMenu" Visibility="Visible">

@@ -827,6 +827,7 @@ namespace Game
 
         //**********************************************************************************************************************************************************
         private List<Rectangle> tilesList = new List<Rectangle>();// Список тайлов, штоб кализия была
+        private List<Rectangle> doorRectangles = new List<Rectangle>();
 
 
         public void GenerateMap(Canvas gameCanvas)          // Стартуем
@@ -961,8 +962,6 @@ namespace Game
                         int doorRight = rand.Next(y + 1, y + height - 2);
                         DrawTileV(x + width - 1, doorRight, Brushes.Red);
                         break;
-                    default:
-                        break;
                 }
             }
             void DrawRectangularRoom2(int x, int y, int width, int height)
@@ -1017,24 +1016,22 @@ namespace Game
                 switch (randomWall)
                 {
                     case 0: // Верхняя стенка
-                        int doorXTop = rand.Next(x + 1, x + width - 2);
-                        DrawTile(doorXTop, y, Brushes.Red);
-                        DrawTile(doorXTop, y + 1, Brushes.Red);
+                        int doorTop = rand.Next(x + 1, x + width - 2);
+                        DrawTileV(doorTop, y, Brushes.Red);
+                        DrawTileV(doorTop, y + 1, Brushes.Red);
                         break;
                     case 1: // Нижняя стенка
-                        int doorXBottom = rand.Next(x + 1, x + width - 2);
-                        DrawTile(doorXBottom, y + height - 1, Brushes.Red);
-                        DrawTile(doorXBottom, y + height, Brushes.Red);
+                        int doorBottom = rand.Next(x + 1, x + width - 2);
+                        DrawTileV(doorBottom, y + height - 1, Brushes.Red);
+                        DrawTileV(doorBottom, y + height, Brushes.Red);
                         break;
                     case 2: // Левая стенка
-                        int doorYLeft = rand.Next(y + 1, y + height - 2);
-                        DrawTile(x, doorYLeft, Brushes.Red);
+                        int doorLeft = rand.Next(y + 1, y + height - 2);
+                        DrawTileV(x, doorLeft, Brushes.Red);
                         break;
                     case 3: // Правая стенка
-                        int doorYRight = rand.Next(y + 1, y + height - 2);
-                        DrawTile(x + width - 1, doorYRight, Brushes.Red);
-                        break;
-                    default:
+                        int doorRight = rand.Next(y + 1, y + height - 2);
+                        DrawTileV(x + width - 1, doorRight, Brushes.Red);
                         break;
                 }
             }
@@ -1098,24 +1095,22 @@ namespace Game
                 switch (randomWall)
                 {
                     case 0: // Верхняя стенка
-                        int doorXTop = rand.Next(x + 1, x + width - 2);
-                        DrawTile(doorXTop, y, Brushes.Red);
-                        DrawTile(doorXTop, y + 1, Brushes.Red);
+                        int doorTop = rand.Next(x + 1, x + width - 2);
+                        DrawTileV(doorTop, y, Brushes.Red);
+                        DrawTileV(doorTop, y + 1, Brushes.Red);
                         break;
                     case 1: // Нижняя стенка
-                        int doorXBottom = rand.Next(x + 1, x + width - 2);
-                        DrawTile(doorXBottom, y + height - 1, Brushes.Red);
-                        DrawTile(doorXBottom, y + height, Brushes.Red);
+                        int doorBottom = rand.Next(x + 1, x + width - 2);
+                        DrawTileV(doorBottom, y + height - 1, Brushes.Red);
+                        DrawTileV(doorBottom, y + height, Brushes.Red);
                         break;
                     case 2: // Левая стенка
-                        int doorYLeft = rand.Next(y + 1, y + height - 2);
-                        DrawTile(x, doorYLeft, Brushes.Red);
+                        int doorLeft = rand.Next(y + 1, y + height - 2);
+                        DrawTileV(x, doorLeft, Brushes.Red);
                         break;
                     case 3: // Правая стенка
-                        int doorYRight = rand.Next(y + 1, y + height - 2);
-                        DrawTile(x + width - 1, doorYRight, Brushes.Red);
-                        break;
-                    default:
+                        int doorRight = rand.Next(y + 1, y + height - 2);
+                        DrawTileV(x + width - 1, doorRight, Brushes.Red);
                         break;
                 }
             }
@@ -1163,6 +1158,11 @@ namespace Game
                 Canvas.SetLeft(tile, x * TileSize);// Позиция по x
                 Canvas.SetTop(tile, y * TileSize);// Позиция по y ( куда ставить тайл?)
 
+                if (brush == Brushes.Red) // Assuming Red represents doors
+                {
+                    doorRectangles.Add(tile); // Add door rectangle to the doorRectangles list
+                }
+
                 gameCanvas.Children.Add(tile);// =)
             }
         }
@@ -1192,14 +1192,21 @@ namespace Game
 
         private bool Collision(int x, int y)
         {
-            foreach (Rectangle tile in tilesList)
+            foreach (Rectangle tile in tilesList.Concat(doorRectangles)) // Concatenate regular tiles and door rectangles
             {
                 int tileX = (int)Canvas.GetLeft(tile) / TileSize;
                 int tileY = (int)Canvas.GetTop(tile) / TileSize;
 
-                if (tileX <= x && tileY <= y)
+                if (tileX == x && tileY == y)
                 {
-                    return true;
+                    foreach (Rectangle door in doorRectangles)
+                    {
+                        if (Canvas.GetLeft(door) / TileSize == x && Canvas.GetTop(door) / TileSize == y)
+                        {
+                            return false; // Return false (no collision) if it's a door
+                        }
+                    }
+                    return true; // Return true for collision with regular tiles
                 }
             }
             return false;

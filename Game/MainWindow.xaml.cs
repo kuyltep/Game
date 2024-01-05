@@ -22,6 +22,8 @@ namespace Game
         public bool isSettingsMenuOpen = false;
         public bool isGameInitialize = false;
         public int heroHealth = 1;
+        public int currentHealth = 1;
+        public int maxHealth = 4;
         public int heroMaxShootDistance = 200;
         public int heroArmor = 3;
         public int canvasLeft = 0;
@@ -44,7 +46,7 @@ namespace Game
 
         public Image gunRight = new Image();
         public Image gunLeft = new Image();
-
+        private List<Rectangle> enemyBullets = new List<Rectangle>();
         private List<(Rectangle bullet, int direction)> bullets = new List<(Rectangle, int)>();
         private DispatcherTimer bulletTimer = new DispatcherTimer();
         private List<int> bulletDistance = new List<int>();
@@ -69,6 +71,7 @@ namespace Game
             InitializeMediaPlayer();
             InitializeImages();
             InitializeMainButtons();
+            CreateEnemy(gameCanvas);
         }
 
         //Метод для инициализации плеера при запуске игры 
@@ -439,7 +442,7 @@ namespace Game
         //Инициализация игры и всей логики игры (персонаж, стрельба, враги)
         public void InitializeEnemyTimer(Canvas gameCanvas)
         {
-            enemyTimer.Interval = TimeSpan.FromSeconds(8); // Интервал появления новых врагов
+            enemyTimer.Interval = TimeSpan.FromSeconds(15); // Интервал появления новых врагов
             enemyTimer.Tick += (sender, e) => EnemyTimer_Tick(sender, e, gameCanvas);
             enemyTimer.Start();
         }
@@ -447,17 +450,21 @@ namespace Game
         private void EnemyTimer_Tick(object sender, EventArgs e, Canvas gameCanvas)
         {
             CreateEnemy(gameCanvas);
+            StartEnemyMovement();
+
         }
 
         public void CreateEnemy(Canvas gameCanvas)
         {
+            if(enemies.Count <= 15)
+            {
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Rectangle enemy = new Rectangle
                 {
-                    Width = 15,
-                    Height = 15,
+                    Width = 20,
+                    Height = 20,
                     Fill = Brushes.Blue
                 };
                 gameCanvas.Children.Add(enemy);
@@ -469,13 +476,141 @@ namespace Game
                 Canvas.SetTop(enemy, randomY);
                 enemies.Add(enemy);
             }
+            }
         }
 
-        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
+        // Добавление случайного перемещения врагам
+        private void MoveEnemies()
         {
-            bulletTimer.Interval = TimeSpan.FromMilliseconds(10);
-            bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas, enemies);
+            foreach (Rectangle enemy in enemies)
+            {
+                double dx = random.Next(-45, 45); // Случайное значение для перемещения по оси X
+                double dy = random.Next(-45, 45); // Случайное значение для перемещения по оси Y
+
+                double newLeft = Canvas.GetLeft(enemy) + dx;
+                double newTop = Canvas.GetTop(enemy) + dy;
+
+                // Ограничиваем перемещение в пределах игрового поля
+                newLeft = Math.Max(0, Math.Min(gameCanvas.ActualWidth - enemy.Width, newLeft));
+                newTop = Math.Max(0, Math.Min(gameCanvas.ActualHeight - enemy.Height, newTop));
+
+                Canvas.SetLeft(enemy, newLeft);
+                Canvas.SetTop(enemy, newTop);
+            }
         }
+
+        // Используйте таймер для вызова метода перемещения врагов
+        private void StartEnemyMovement()
+        {
+            DispatcherTimer enemyMovementTimer = new DispatcherTimer();
+            enemyMovementTimer.Interval = TimeSpan.FromSeconds(4); // Интервал для перемещения врагов
+            enemyMovementTimer.Tick += (sender, e) => MoveEnemies();
+            enemyMovementTimer.Start();
+        }
+
+
+        private void EnemyShootAtPlayer()
+        {
+            foreach (Rectangle enemy in enemies)
+            {
+                double playerX = GameCanvas.Margin.Left + GameCanvas.Width / 2;
+                double playerY = GameCanvas.Margin.Top + GameCanvas.Height / 2;
+                double enemyX = Canvas.GetLeft(enemy);
+                double enemyY = Canvas.GetTop(enemy);
+
+                double distance = Math.Sqrt(Math.Pow(playerX - enemyX, 2) + Math.Pow(playerY - enemyY, 2));
+
+                if (distance <= 100)
+                {
+                    CreateEnemyBullet(enemyX, enemyY, playerX, playerY);
+                }
+            CheckPlayerCollisionWithEnemyBullet();
+
+            }
+        }
+
+        // Создание пули врага
+        private void CreateEnemyBullet(double x, double y, double playerX, double playerY)
+        {
+            int enemyBulletDistance = 0;
+            Rectangle bullet = new Rectangle
+            {
+                Width = 10,
+                Height = 10,
+                Fill = Brushes.Blue // Цвет пули врага
+            };
+            gameCanvas.Children.Add(bullet);
+            Canvas.SetLeft(bullet, x);
+            Canvas.SetTop(bullet, y);
+
+            double angle = Math.Atan2(playerY - y, playerX - x); // Вычисление угла до игрока
+
+            DispatcherTimer bulletMoveTimer = new DispatcherTimer();
+            bulletMoveTimer.Interval = TimeSpan.FromMilliseconds(200);
+            bulletMoveTimer.Tick += (sender, e) =>
+            {
+                int speed = 6; // Скорость движения пули врага
+
+                double deltaX = Math.Cos(angle) * speed;
+                double deltaY = Math.Sin(angle) * speed;
+
+                Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + deltaX);
+                Canvas.SetTop(bullet, Canvas.GetTop(bullet) + deltaY);
+
+                double bulletX = Canvas.GetLeft(bullet);
+                double bulletY = Canvas.GetTop(bullet);
+                enemyBulletDistance += speed;
+
+                // Условия остановки движения пули при выходе за пределы экрана (можно доработать)
+                if (bulletX < 0 || bulletX > gameCanvas.ActualWidth || bulletY < 0 || bulletY > gameCanvas.ActualHeight || enemyBulletDistance >= 200)
+                {
+                    gameCanvas.Children.Remove(bullet);
+                    bulletMoveTimer.Stop();
+                }
+            };
+
+            bulletMoveTimer.Start();
+        }
+
+        // Используйте таймер для вызова метода стрельбы врагов по игроку
+        private void StartEnemyShooting()
+        {
+            DispatcherTimer enemyShootingTimer = new DispatcherTimer();
+            enemyShootingTimer.Interval = TimeSpan.FromMilliseconds(2000); // Интервал для стрельбы врагов
+            enemyShootingTimer.Tick += (sender, e) => EnemyShootAtPlayer();
+            enemyShootingTimer.Start();
+        }
+
+        private void CheckPlayerCollisionWithEnemyBullet()
+        {
+            foreach (Rectangle enemyBullet in enemyBullets)
+            {
+                double playerX = GameCanvas.Margin.Left;
+                double playerY = GameCanvas.Margin.Top;
+                double bulletX = Canvas.GetLeft(enemyBullet);
+                double bulletY = Canvas.GetTop(enemyBullet);
+
+                if (bulletX > playerX && bulletX < playerX + GameCanvas.Width &&
+                bulletY > playerY && bulletY < playerY + GameCanvas.Height)
+                {
+                    gameCanvas.Children.Remove(enemyBullet); // Удаление пули врага при столкновении
+
+                    // Логика обработки попадания в главного героя
+                    if (heroArmor > 0)
+                    {
+                        heroArmor--; // Если у героя есть броня, отнимаем единицу брони
+                        if (heroArmor <= 0 && heroHealth > 0)
+                        {
+                            heroHealth--; // И отнимаем единицу здоровья
+                        }
+                    }
+                    else
+
+                    break; // Выходим из цикла, чтобы обработать только одну пулю при столкновении
+                }
+            }
+        }
+
 
         public static bool CheckRectangleIntersection(Rectangle rect1, Rectangle rect2)
         {
@@ -494,20 +629,23 @@ namespace Game
             return new Rect(Canvas.GetLeft(rectangle), Canvas.GetTop(rectangle), rectangle.ActualWidth, rectangle.ActualHeight);
         }
 
+        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
+        {
+            bulletTimer.Interval = TimeSpan.FromMilliseconds(10);
+            bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas, enemies);
+        }
         public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
         {
             for (int i = bullets.Count - 1; i >= 0; i--)
             {
                 var (bullet, direction) = bullets[i];
-                double bulletLeft = Canvas.GetLeft(bullet);
-                double bulletRight = bulletLeft + bullet.Width;
-                double bulletTop = Canvas.GetTop(bullet);
-                double bulletBottom = bulletTop + bullet.Height;
                 Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + 5 * direction); // Скорость полета пули, умноженная на направление
                 bulletDistance[i] += 5;
 
                 // Удаление пули, если она преодолела расстояние 200 пикселей
-                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= heroMaxShootDistance || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= heroMaxShootDistance || Canvas.GetLeft(bullet) < 0 || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth || bulletDistance[i] >= heroMaxShootDistance)
+                if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= heroMaxShootDistance 
+                    || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= heroMaxShootDistance || Canvas.GetLeft(bullet) < 0 
+                    || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth || bulletDistance[i] >= heroMaxShootDistance)
                 {
                     gameCanvas.Children.Remove(bullet);
                     bullets.RemoveAt(i);
@@ -527,8 +665,6 @@ namespace Game
                     }
                 }
             }
-
-
         }
 
 
@@ -598,6 +734,7 @@ namespace Game
             HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
             InitializeBulletTimer(gameCanvas, GameCanvas, enemies);
             InitializeEnemyTimer(gameCanvas);
+            StartEnemyShooting();
 
         }
 
@@ -634,7 +771,6 @@ namespace Game
             gunLeft.Visibility = Visibility.Visible;
             GameCanvas.Children.Add(gunLeft);
             return gunLeft;
-
         }
 
         //Hero health and Hero armor

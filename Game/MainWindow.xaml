@@ -6,13 +6,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Game"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown" Loaded="Window_Loaded" MouseDown="Window_MouseDown">
+        Title="Bepunk" Height="450" Width="800" KeyDown="Window_KeyDown" Loaded="Window_Loaded" MouseDown="Window_MouseDown">
     <Grid>
         
     <Grid x:Name="Game" Visibility="Hidden">
         <Canvas x:Name="gameCanvas">
         </Canvas>
             <Grid x:Name="GameCanvas"  Width="40" Height="26" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Red" Panel.ZIndex="2"/>
+            
         </Grid>
         <Canvas Name="lightCanvas"></Canvas>
         <Grid x:Name="MainMenu" Visibility="Visible">
@@ -27,5 +28,10 @@
                 <ImageBrush ImageSource="images/2.png"/>
             </Grid.Background>
         </Grid>
+        <Image x:Name="GameOver" VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="10" Visibility="Hidden">  
+            <Image.OpacityMask>
+                <ImageBrush ImageSource="/gameover.png"/>
+            </Image.OpacityMask>
+        </Image>
     </Grid>
 </Window>

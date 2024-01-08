@@ -39,10 +39,10 @@ namespace Game
         private MediaPlayer _mpCurSound;
         public Image hero = new Image();
         public string gunName = "GreenGun";
-        public List<Rectangle> enemies = new List<Rectangle>();
+        public List<Image> enemies = new List<Image>();
         List<(Image, string)> itemsImages = new List<(Image, string)>();
         string[] items = { "book", "drink", "eye", "hearth", "stew" };
-
+        string[] enemiesImages = { "cat", "dog", "people" }; 
         //Timers
         private DispatcherTimer enemyMovementTimer = new DispatcherTimer();
         private DispatcherTimer enemyTimer = new DispatcherTimer();
@@ -475,19 +475,18 @@ namespace Game
 
             for (int i = 0; i < 8; i++)
             {
-                Rectangle enemy = new Rectangle
-                {
-                    Width = 20,
-                    Height = 20,
-                    Fill = Brushes.Blue
-                };
+                    int randomNumber = random.Next(0, enemiesImages.Length);
+                string enemyName = enemiesImages[randomNumber];
+                Image enemy = new Image();
+                    enemy.Width = 40;
+                    enemy.Height = 40;
+                enemy.Source = new BitmapImage(new Uri($"images/enemies/{enemyName}.png", UriKind.Relative));
                 gameCanvas.Children.Add(enemy);
 
                 double randomX = random.Next((int)(gameCanvas.ActualWidth - enemy.Width));
                 double randomY = random.Next((int)(gameCanvas.ActualHeight - enemy.Height));
 
-                Canvas.SetLeft(enemy, randomX);
-                Canvas.SetTop(enemy, randomY);
+                    enemy.Margin = new Thickness(randomX, randomY, 0, 0);
                 enemies.Add(enemy);
             }
             }
@@ -496,7 +495,7 @@ namespace Game
         // Добавление случайного перемещения врагам
         private void MoveEnemies()
         {
-            foreach (Rectangle enemy in enemies)
+            foreach (Image enemy in enemies)
             {
                 double dx = random.Next(-45, 45); // Случайное значение для перемещения по оси X
                 double dy = random.Next(-45, 45); // Случайное значение для перемещения по оси Y
@@ -524,12 +523,12 @@ namespace Game
 
         private void EnemyShootAtPlayer()
         {
-            foreach (Rectangle enemy in enemies)
+            foreach (Image enemy in enemies)
             {
                 double playerX = GameCanvas.Margin.Left + GameCanvas.Width / 2;
                 double playerY = GameCanvas.Margin.Top + GameCanvas.Height / 2;
-                double enemyX = Canvas.GetLeft(enemy);
-                double enemyY = Canvas.GetTop(enemy);
+                double enemyX = enemy.Margin.Left;
+                double enemyY = enemy.Margin.Top;
 
                 double distance = Math.Sqrt(Math.Pow(playerX - enemyX, 2) + Math.Pow(playerY - enemyY, 2));
 
@@ -620,7 +619,6 @@ namespace Game
             gameOverPlayer.Open(new Uri(@"sounds\gameover.mp3", UriKind.Relative));
             gameOverPlayer.Play();
             TimerEvent();
- 
         }
         public void TimerEvent()
         {
@@ -687,12 +685,12 @@ namespace Game
             return new Rect(Canvas.GetLeft(rectangle), Canvas.GetTop(rectangle), rectangle.ActualWidth, rectangle.ActualHeight);
         }
 
-        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
+        public void InitializeBulletTimer(Canvas gameCanvas, Grid GameCanvas, List<Image> enemies)
         {
             bulletTimer.Interval = TimeSpan.FromMilliseconds(10);
             bulletTimer.Tick += (sender, e) => BulletTimer_Tick(sender, e, gameCanvas, GameCanvas, enemies);
         }
-        public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas, List<Rectangle> enemies)
+        public void BulletTimer_Tick(object sender, EventArgs e, Canvas gameCanvas, Grid GameCanvas, List<Image> enemies)
         {
             for (int i = bullets.Count - 1; i >= 0; i--)
             {
@@ -712,7 +710,9 @@ namespace Game
                 for (int j = enemies.Count - 1; j >= 0; j--)
                 {
                     var enemy = enemies[j];
-                    if (CheckRectangleIntersection(bullet, enemy))
+                    Rect rect1 = new Rect(Canvas.GetLeft(bullet), Canvas.GetTop(bullet), bullet.Width, bullet.Height);
+                    Rect rect2 = new Rect(enemy.Margin.Left, enemy.Margin.Top, enemy.Width, enemy.Height);
+                    if (rect1.IntersectsWith(rect2))
                     {
                         // Remove bullet and enemy
                         gameCanvas.Children.Remove(bullet);
@@ -778,7 +778,7 @@ namespace Game
         }
 
  
-        public void InitializeGame(Image hero, Grid GameCanvas, Canvas gameCanvas, List<Rectangle> enemies, int heroHealth, int heroArmor, string gunName)
+        public void InitializeGame(Image hero, Grid GameCanvas, Canvas gameCanvas, List<Image> enemies, int heroHealth, int heroArmor, string gunName)
         {
             RandomGenerationItems(11);
             HeroRightSide(hero);
@@ -1283,8 +1283,6 @@ namespace Game
 
                 if (rect1.IntersectsWith(rect2))
                 {
-
-
                     switch (itemName)
                     {
                         case "book":

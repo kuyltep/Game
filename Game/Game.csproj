@@ -137,6 +137,9 @@
     <Resource Include="bin\Debug\Image\Room3\Wall3_8.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\enemies\cat.png" />
+    <Resource Include="images\enemies\dog.png" />
+    <Resource Include="images\enemies\people.png" />
     <Resource Include="images\armor\4arm.png" />
     <Resource Include="images\heroDied.png" />
     <Resource Include="images\gameover.png" />

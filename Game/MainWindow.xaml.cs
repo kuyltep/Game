@@ -27,6 +27,7 @@ namespace Game
         public int initialHeroArmor = 3;
         public int heroHealth = 1;
         public int currentHealth = 1;
+        public int maxArmor = 4;
         public int maxHealth = 4;
         public int heroMaxShootDistance = 200;
         public int heroArmor = 3;
@@ -49,6 +50,7 @@ namespace Game
         private DispatcherTimer bulletMoveTimer = new DispatcherTimer();
         private DispatcherTimer enemyShootingTimer = new DispatcherTimer();
 
+        public static System.Timers.Timer timer = new System.Timers.Timer();
 
         Random random = new Random();
         Random randomItem = new Random();
@@ -540,8 +542,10 @@ namespace Game
         }
 
         // Создание пули врага
+        
         private void CreateEnemyBullet(double x, double y, double playerX, double playerY)
         {
+            bool hasCollided = false;
             int enemyBulletDistance = 0;
             Rectangle bullet = new Rectangle
             {
@@ -555,10 +559,10 @@ namespace Game
 
             double angle = Math.Atan2(playerY - y, playerX - x); // Вычисление угла до игрока
 
-            bulletMoveTimer.Interval = TimeSpan.FromMilliseconds(200);
+            bulletMoveTimer.Interval = TimeSpan.FromMilliseconds(30);
             bulletMoveTimer.Tick += (sender, e) =>
             {
-                int speed = 6; // Скорость движения пули врага
+                int speed = 1; // Скорость движения пули врага
 
                 double deltaX = Math.Cos(angle) * speed;
                 double deltaY = Math.Sin(angle) * speed;
@@ -578,26 +582,27 @@ namespace Game
                     bulletMoveTimer.Stop();
                 }
 
-                   
-                    if (CheckCollision(GameCanvas, bullet))
-                    {
-                    bulletMoveTimer.Stop();
+
+                if (!hasCollided && CheckCollision(GameCanvas, bullet))
+                {
+                    hasCollided = true;
                     enemyBullets.Remove(bullet);
                     gameCanvas.Children.Remove(bullet); // Удаление пули врага при 
-                        // Логика обработки попадания в главного героя
-                        if (heroArmor > 0)
-                        {
-                            heroArmor--; // Если у героя есть броня, отнимаем единицу брони
+                                                        // Логика обработки попадания в главного героя
+                    if (heroArmor > 0)
+                    {
+                        heroArmor--; // Если у героя есть броня, отнимаем единицу брони
                         HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
 
 
                     }
                     else if (heroArmor == 0 && heroHealth > 0)
-                        {
+                    {
                         heroHealth--; // И отнимаем единицу здоровья
                         HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
 
-                    }else if(heroArmor == 0 && heroHealth == 0)
+                    }
+                    else if (heroArmor == 0 && heroHealth == 0)
                     {
                         GameOverMethod();
                     }
@@ -611,11 +616,11 @@ namespace Game
         {
             _mpBgr.Stop();
             GameOver.Visibility = Visibility.Visible;
-            hero.Source = new BitmapImage(new Uri("images/heroDied.png", UriKind.Relative));
             MediaPlayer gameOverPlayer = new MediaPlayer();
             gameOverPlayer.Open(new Uri(@"sounds\gameover.mp3", UriKind.Relative));
             gameOverPlayer.Play();
             TimerEvent();
+ 
         }
         public void TimerEvent()
         {
@@ -659,7 +664,7 @@ namespace Game
         // Используйте таймер для вызова метода стрельбы врагов по игроку
         private void StartEnemyShooting()
         {
-            enemyShootingTimer.Interval = TimeSpan.FromMilliseconds(3000); // Интервал для стрельбы врагов
+            enemyShootingTimer.Interval = TimeSpan.FromMilliseconds(2000); // Интервал для стрельбы врагов
             enemyShootingTimer.Tick += (sender, e) => EnemyShootAtPlayer();
             enemyShootingTimer.Start();
         }
@@ -852,7 +857,7 @@ namespace Game
             armor.Height = 10;
             armor.VerticalAlignment = VerticalAlignment.Bottom;
             armor.HorizontalAlignment = HorizontalAlignment.Right;
-            armor.Margin = new Thickness(0, 0, 0, -20);
+            armor.Margin = new Thickness(0, 0, 0, -23);
             GameCanvas.Children.Add(armor);
         }
 
@@ -1231,7 +1236,6 @@ namespace Game
             {
                 canvasLeft = CharacterX1;
                 canvasTop = CharacterY1;
-
                 if (circleGeometry != null)
                 {
                     Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
@@ -1239,17 +1243,21 @@ namespace Game
                     lightCanvas.InvalidateVisual();
                 }
                 GameCanvas.Margin = new Thickness( canvasLeft * TileSize / 2, canvasTop * TileSize / 2, 0, 0);
+                CollisionWithItems();
+
             }
         }
 
 
         private bool Collision(int x, int y)
         {
+            int newX = x * TileSize / 2; 
+            int newY = y * TileSize / 2;
             foreach (Rectangle tile in tilesList.Concat(doorRectangles)) // Concatenate regular tiles and door rectangles
             {
                 int tileX = (int)Canvas.GetLeft(tile) / TileSize;
                 int tileY = (int)Canvas.GetTop(tile) / TileSize;
-
+                
                 if (tileX == x && tileY == y)
                 {
                     foreach (Rectangle door in doorRectangles)
@@ -1263,6 +1271,82 @@ namespace Game
                 }
             }
             return false;
+        }
+
+        private void CollisionWithItems()
+        {
+            for(int i = 0; i < itemsImages.Count; i++)
+            {
+                var (itemImage, itemName) = itemsImages[i];
+                Rect rect1 = new Rect(GameCanvas.Margin.Left, GameCanvas.Margin.Top, GameCanvas.Width, GameCanvas.Height);
+                Rect rect2 = new Rect(itemImage.Margin.Left, itemImage.Margin.Top, itemImage.Width, itemImage.Height);
+
+                if (rect1.IntersectsWith(rect2))
+                {
+
+
+                    switch (itemName)
+                    {
+                        case "book":
+                            if (heroArmor == initialHeroArmor && heroHealth == initialiHeroHealth && heroHealth < maxHealth - 2)
+                            {
+                                heroHealth += 2;
+                                heroArmor += 1;
+                            }else if(heroArmor != initialHeroArmor || heroHealth < maxHealth)
+                            {
+                                heroArmor = initialHeroArmor;
+                                heroHealth += 1;
+                            }
+                            HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
+                            gameCanvas.Children.Remove(itemImage);
+                            itemsImages.RemoveAt(i);
+                            break;
+                        case "drink":
+                            if(heroHealth < maxHealth && heroArmor < maxArmor)
+                            {
+                                heroHealth += 1;
+                                heroArmor += 1;
+                            }else if(heroHealth == maxHealth && heroArmor < maxArmor)
+                            {
+                                heroArmor += 1;
+                            }else if(heroHealth < maxHealth && heroArmor == maxArmor)
+                            {
+                                heroHealth += 1;
+                            }
+                            HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
+                            gameCanvas.Children.Remove(itemImage);
+                            itemsImages.RemoveAt(i);
+                            break;
+                        case "eye":
+                            if(heroMaxShootDistance <= 400)
+                            {
+                                heroMaxShootDistance += 100;
+                            }
+                            gameCanvas.Children.Remove(itemImage);
+                            itemsImages.RemoveAt(i);
+                            break;
+                        case "hearth":
+                            if(heroHealth < maxHealth)
+                            {
+                                heroHealth += 1;
+                            }
+                            HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
+                            gameCanvas.Children.Remove(itemImage);
+                            itemsImages.RemoveAt(i);
+                            break;
+                        case "stew":
+                            if(heroArmor < maxArmor)
+                            {
+                                heroArmor += 1;
+                            }
+                            HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
+                            gameCanvas.Children.Remove(itemImage);
+                            itemsImages.RemoveAt(i);
+                            break;
+                        default: break;
+                    }
+                }
+            }
         }
 
         private void Light()

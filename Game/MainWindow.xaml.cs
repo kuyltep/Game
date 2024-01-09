@@ -38,11 +38,13 @@ namespace Game
         private MediaPlayer _mpBgr;
         private MediaPlayer _mpCurSound;
         public Image hero = new Image();
-        public string gunName = "GreenGun";
+        public string gunName = "StartGun";
         public List<Image> enemies = new List<Image>();
         List<(Image, string)> itemsImages = new List<(Image, string)>();
+        List<(Image, string)> gunsImages = new List<(Image, string)>();
         string[] items = { "book", "drink", "eye", "hearth", "stew" };
-        string[] enemiesImages = { "cat", "dog", "people" }; 
+        string[] enemiesImages = { "cat", "dog", "people" };
+        string[] guns = { "GreenGun", "Guitar", "Megagun", "RedGun" };
         //Timers
         private DispatcherTimer enemyMovementTimer = new DispatcherTimer();
         private DispatcherTimer enemyTimer = new DispatcherTimer();
@@ -728,13 +730,58 @@ namespace Game
 
         public void Window_MouseDown(object sender, MouseEventArgs e)
         {
+            var  bullet = new Rectangle();
             int distance = 0;
-            var bullet = new Rectangle
+            switch (gunName)
             {
-                Width = 6,
-                Height = 5,
-                Fill = Brushes.OrangeRed
-            };
+                case "StartGun":
+                    heroMaxShootDistance = 200;
+                    bullet = new Rectangle
+                    {
+                        Width = 6,
+                        Height = 5,
+                        Fill = Brushes.OrangeRed
+                    };
+                    break;
+                case "GreenGun":
+                    heroMaxShootDistance = 250;
+                    bullet = new Rectangle
+                    {
+                        Width = 6,
+                        Height = 6,
+                        Fill = Brushes.Green
+                    };
+                    break;
+                case "Megagun":
+                    heroMaxShootDistance = 350;
+                    bullet = new Rectangle
+                    {
+                        Width = 20,
+                        Height = 20,
+                        Fill = Brushes.Red
+                    };
+                    break;
+                case "RedGun":
+                    heroMaxShootDistance = 300;
+                    bullet = new Rectangle
+                    {
+                        Width = 15,
+                        Height =15,
+                        Fill = Brushes.Red
+                    };
+                    break;
+                case "Guitar":
+                    heroMaxShootDistance = 400;
+
+                    bullet = new Rectangle
+                    {
+                        Width = 12,
+                        Height = 30,
+                        Fill = Brushes.Gray
+                    };
+                    break;
+                default: break;
+            }
             gameCanvas.Children.Add(bullet);
             if (direction == 1)
             {
@@ -777,9 +824,30 @@ namespace Game
             }
         }
 
- 
+        private void RandomGenerationGuns()
+        {
+            for (int i = 0; i < guns.Length; i++)
+            {
+                //Рандомная генерация предметов на карте, но не работает то, что они должны добавляться в центр комнаты
+
+                int index = random.Next(0, guns.Length);
+                Image gunImage = new Image();
+                BitmapImage gun = new BitmapImage();
+                gun.BeginInit();
+                gun.UriSource = new Uri($"images/guns/{guns[index]}Right.png", UriKind.Relative);
+                gun.EndInit();
+                gunImage.Source = gun;
+                gunImage.Width = 40;
+                gunImage.Height = 40;
+                gunImage.Margin = new Thickness(randomItem.Next(0, MapWidth * TileSize / 2), randomItem.Next(0, MapHeight * TileSize / 2), 0, 0);
+                gunsImages.Add((gunImage, guns[index]));
+                gameCanvas.Children.Add(gunImage);
+            }
+        }
+
         public void InitializeGame(Image hero, Grid GameCanvas, Canvas gameCanvas, List<Image> enemies, int heroHealth, int heroArmor, string gunName)
         {
+            RandomGenerationGuns();
             RandomGenerationItems(11);
             HeroRightSide(hero);
             hero.Height = 25;
@@ -805,11 +873,11 @@ namespace Game
             gunRightImage.UriSource = new Uri($"images/guns/{gunName}Right.png", UriKind.Relative);
             gunRightImage.EndInit();
             gunRight.Source = gunRightImage;
-            gunRight.Height = 12;
-            gunRight.Width = 12;
+            gunRight.Height = 25;
+            gunRight.Width = 25;
             gunRight.VerticalAlignment = VerticalAlignment.Center;
             gunRight.HorizontalAlignment = HorizontalAlignment.Center;
-            gunRight.Margin = new Thickness(25, 5, 0, 0);
+            gunRight.Margin = new Thickness(35, 5, 0, 0);
             gunRight.Visibility = Visibility.Visible;
             GameCanvas.Children.Add(gunRight);
             return gunRight;
@@ -823,11 +891,11 @@ namespace Game
             gunLeftImage.UriSource = new Uri($"images/guns/{gunName}Left.png", UriKind.Relative);
             gunLeftImage.EndInit();
             gunLeft.Source = gunLeftImage;
-            gunLeft.Height = 12;
-            gunLeft.Width = 12;
+            gunLeft.Height = 25;
+            gunLeft.Width = 25;
             gunLeft.VerticalAlignment = VerticalAlignment.Center;
             gunLeft.HorizontalAlignment = HorizontalAlignment.Center;
-            gunLeft.Margin = new Thickness(0, 5, 25, 0);
+            gunLeft.Margin = new Thickness(0, 5, 35, 0);
             gunLeft.Visibility = Visibility.Visible;
             GameCanvas.Children.Add(gunLeft);
             return gunLeft;
@@ -1244,7 +1312,7 @@ namespace Game
                 }
                 GameCanvas.Margin = new Thickness( canvasLeft * TileSize / 2, canvasTop * TileSize / 2, 0, 0);
                 CollisionWithItems();
-
+                CollisionWithGuns();
             }
         }
 
@@ -1343,6 +1411,24 @@ namespace Game
                             break;
                         default: break;
                     }
+                }
+            }
+        }
+
+        private void CollisionWithGuns()
+        {
+            for (int i = 0; i < gunsImages.Count; i++)
+            {
+                var (gunImage, gun) = gunsImages[i];
+                Rect rect1 = new Rect(GameCanvas.Margin.Left, GameCanvas.Margin.Top, GameCanvas.Width, GameCanvas.Height);
+                Rect rect2 = new Rect(gunImage.Margin.Left, gunImage.Margin.Top, gunImage.Width, gunImage.Height);
+                if (rect1.IntersectsWith(rect2))
+                {
+                    gunName = gun;
+                    gunRight.Source = new BitmapImage(new Uri($"images/guns/{gunName}Right.png", UriKind.Relative));
+                    gunLeft.Source = new BitmapImage(new Uri($"images/guns/{gunName}Left.png", UriKind.Relative));
+                    gameCanvas.Children.Remove(gunImage);
+                    gunsImages.RemoveAt(i);
                 }
             }
         }

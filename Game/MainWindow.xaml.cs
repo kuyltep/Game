@@ -1137,7 +1137,7 @@ namespace Game
                 }
                 for (int i = x + 1; i < x + width - 1; i++)
                 {
-                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2.png", UriKind.Relative)))); // Например, добавление строки стены чуть ниже верхней границы
+                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room2/Wall2.png", UriKind.Relative)))); // Добавление стены чуть ниже верхней границы
                 }
                 int randomWall = rand.Next(4);
 
@@ -1215,7 +1215,7 @@ namespace Game
                 }
                 for (int i = x + 1; i < x + width - 1; i++)
                 {
-                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3.png", UriKind.Relative)))); // Например, добавление строки стены чуть ниже верхней границы
+                    DrawTile(i, y + 1, new ImageBrush(new BitmapImage(new Uri("Image/Room3/Wall3.png", UriKind.Relative)))); // Добавление строки стены чуть ниже верхней границы
                 }
 
                 int randomWall = rand.Next(4);
@@ -1286,9 +1286,9 @@ namespace Game
                 Canvas.SetLeft(tile, x * TileSize);// Позиция по x
                 Canvas.SetTop(tile, y * TileSize);// Позиция по y ( куда ставить тайл?)
 
-                if (brush == Brushes.Red) // Assuming Red represents doors
+                if (brush == Brushes.Red) // Красные двери
                 {
-                    doorRectangles.Add(tile); // Add door rectangle to the doorRectangles list
+                    doorRectangles.Add(tile); // Добавить дверь в коллекцию
                 }
 
                 gameCanvas.Children.Add(tile);// =)
@@ -1321,7 +1321,7 @@ namespace Game
         {
             int newX = x * TileSize / 2; 
             int newY = y * TileSize / 2;
-            foreach (Rectangle tile in tilesList.Concat(doorRectangles)) // Concatenate regular tiles and door rectangles
+            foreach (Rectangle tile in tilesList.Concat(doorRectangles))
             {
                 int tileX = (int)Canvas.GetLeft(tile) / TileSize;
                 int tileY = (int)Canvas.GetTop(tile) / TileSize;
@@ -1332,10 +1332,10 @@ namespace Game
                     {
                         if (Canvas.GetLeft(door) / TileSize == x && Canvas.GetTop(door) / TileSize == y)
                         {
-                            return false; // Return false (no collision) if it's a door
+                            return false; // Возвращает false (no collision) если это дверь
                         }
                     }
-                    return true; // Return true for collision with regular tiles
+                    return true; // Возвращает true если нужна коллизия
                 }
             }
             return false;

@@ -1306,11 +1306,11 @@ namespace Game
                 canvasTop = CharacterY1;
                 if (circleGeometry != null)
                 {
-                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2, GameCanvas.Margin.Top + GameCanvas.Height / 2);
+                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width, GameCanvas.Margin.Top + GameCanvas.Height);
                     circleGeometry.Center = heromove;
                     lightCanvas.InvalidateVisual();
                 }
-                GameCanvas.Margin = new Thickness( canvasLeft * TileSize / 2, canvasTop * TileSize / 2, 0, 0);
+                GameCanvas.Margin = new Thickness( canvasLeft * TileSize, canvasTop * TileSize, 0, 0);
                 CollisionWithItems();
                 CollisionWithGuns();
             }

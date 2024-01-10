@@ -1306,7 +1306,7 @@ namespace Game
                 canvasTop = CharacterY1;
                 if (circleGeometry != null)
                 {
-                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width, GameCanvas.Margin.Top + GameCanvas.Height);
+                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2  , GameCanvas.Margin.Top + GameCanvas.Height);
                     circleGeometry.Center = heromove;
                     lightCanvas.InvalidateVisual();
                 }

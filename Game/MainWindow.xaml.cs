@@ -31,8 +31,8 @@ namespace Game
         public int maxHealth = 4;
         public int heroMaxShootDistance = 200;
         public int heroArmor = 3;
-        public int canvasLeft = 0;
-        public int canvasTop = 0;
+        public double canvasLeft = 0;
+        public double canvasTop = 0;
         private EllipseGeometry circleGeometry;
         public bool isMusicOn = false;
         private MediaPlayer _mpBgr;
@@ -45,6 +45,7 @@ namespace Game
         string[] items = { "book", "drink", "eye", "hearth", "stew" };
         string[] enemiesImages = { "cat", "dog", "people" };
         string[] guns = { "GreenGun", "Guitar", "Megagun", "RedGun" };
+        string[] musics = { "durak", "jump", "kukla", "lesnik" };
         //Timers
         private DispatcherTimer enemyMovementTimer = new DispatcherTimer();
         private DispatcherTimer enemyTimer = new DispatcherTimer();
@@ -58,11 +59,14 @@ namespace Game
         Random randomItem = new Random();
         int itemsCount = 0;
 
+        public bool kingCollision = false;
         public Image health = new Image();
         public Image armor = new Image();
 
         public Image gunRight = new Image();
         public Image gunLeft = new Image();
+        public Image king = new Image();
+
         private List<Rectangle> enemyBullets = new List<Rectangle>();
         private List<(Rectangle bullet, int direction)> bullets = new List<(Rectangle, int)>();
         private List<int> bulletDistance = new List<int>();
@@ -85,6 +89,8 @@ namespace Game
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             InitializeMediaPlayer();
+            gameCanvas.Width = MapWidth * TileSize;
+            gameCanvas.Height = MapHeight * TileSize;
             InitializeImages();
             InitializeMainButtons();
             CreateEnemy(gameCanvas);
@@ -416,21 +422,33 @@ namespace Game
                 switch (e.Key)
                 {
                     case Key.Up:
-                        MoveCharacter(0, -1);
+                        if (GameCanvas.Margin.Top > 0)
+                        {
+                            MoveCharacter(0, -1);
+                        }
                         break;
                     case Key.Down:
+                        if (GameCanvas.Margin.Top < gameCanvas.Height - 850)
+                        { 
                         MoveCharacter(0, 1);
+                        }
                         break;
                     case Key.Left:
                         direction = -1;
+                        if(GameCanvas.Margin.Left > 0)
+                        {
                         MoveCharacter(-1, 0);
+                        }
                         HeroLeftSide(hero);
                         gunRight.Visibility = Visibility.Hidden;
                         gunLeft.Visibility = Visibility.Visible;
                         break;
                     case Key.Right:
                         direction = 1;
+                        if(GameCanvas.Margin.Left < gameCanvas.Width - 1100)
+                        { 
                         MoveCharacter(1, 0);
+                        }
                         HeroRightSide(hero);
                         gunLeft.Visibility = Visibility.Hidden;
                         gunRight.Visibility = Visibility.Visible;
@@ -458,7 +476,7 @@ namespace Game
         //Инициализация игры и всей логики игры (персонаж, стрельба, враги)
         public void InitializeEnemyTimer(Canvas gameCanvas)
         {
-            enemyTimer.Interval = TimeSpan.FromSeconds(15); // Интервал появления новых врагов
+            enemyTimer.Interval = TimeSpan.FromSeconds(10); // Интервал появления новых врагов
             enemyTimer.Tick += (sender, e) => EnemyTimer_Tick(sender, e, gameCanvas);
             enemyTimer.Start();
         }
@@ -472,10 +490,10 @@ namespace Game
 
         public void CreateEnemy(Canvas gameCanvas)
         {
-            if(enemies.Count <= 15)
+            if(enemies.Count <= 55)
             {
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 15; i++)
             {
                     int randomNumber = random.Next(0, enemiesImages.Length);
                 string enemyName = enemiesImages[randomNumber];
@@ -485,8 +503,8 @@ namespace Game
                 enemy.Source = new BitmapImage(new Uri($"images/enemies/{enemyName}.png", UriKind.Relative));
                 gameCanvas.Children.Add(enemy);
 
-                double randomX = random.Next((int)(gameCanvas.ActualWidth - enemy.Width));
-                double randomY = random.Next((int)(gameCanvas.ActualHeight - enemy.Height));
+                double randomX = random.Next((int)(gameCanvas.Width - 1200 - enemy.Width));
+                double randomY = random.Next((int)(gameCanvas.Height - 1000 - enemy.Height));
 
                     enemy.Margin = new Thickness(randomX, randomY, 0, 0);
                 enemies.Add(enemy);
@@ -499,8 +517,8 @@ namespace Game
         {
             foreach (Image enemy in enemies)
             {
-                double dx = random.Next(-45, 45); // Случайное значение для перемещения по оси X
-                double dy = random.Next(-45, 45); // Случайное значение для перемещения по оси Y
+                double dx = random.Next(-45, 45);
+                double dy = random.Next(-45, 45); 
 
                 double newLeft = Canvas.GetLeft(enemy) + dx;
                 double newTop = Canvas.GetTop(enemy) + dy;
@@ -517,7 +535,7 @@ namespace Game
         // Используйте таймер для вызова метода перемещения врагов
         private void StartEnemyMovement()
         {
-            enemyMovementTimer.Interval = TimeSpan.FromSeconds(4); // Интервал для перемещения врагов
+            enemyMovementTimer.Interval = TimeSpan.FromSeconds(4);
             enemyMovementTimer.Tick += (sender, e) => MoveEnemies();
             enemyMovementTimer.Start();
         }
@@ -552,13 +570,13 @@ namespace Game
             {
                 Width = 10,
                 Height = 10,
-                Fill = Brushes.Blue // Цвет пули врага
+                Fill = Brushes.Blue 
             };
             gameCanvas.Children.Add(bullet);
             Canvas.SetLeft(bullet, x);
             Canvas.SetTop(bullet, y);
 
-            double angle = Math.Atan2(playerY - y, playerX - x); // Вычисление угла до игрока
+            double angle = Math.Atan2(playerY - y, playerX - x); 
 
             bulletMoveTimer.Interval = TimeSpan.FromMilliseconds(30);
             bulletMoveTimer.Tick += (sender, e) =>
@@ -588,18 +606,18 @@ namespace Game
                 {
                     hasCollided = true;
                     enemyBullets.Remove(bullet);
-                    gameCanvas.Children.Remove(bullet); // Удаление пули врага при 
-                                                        // Логика обработки попадания в главного героя
+                    gameCanvas.Children.Remove(bullet); 
+                                                        
                     if (heroArmor > 0)
                     {
-                        heroArmor--; // Если у героя есть броня, отнимаем единицу брони
+                        heroArmor--;
                         HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
 
 
                     }
                     else if (heroArmor == 0 && heroHealth > 0)
                     {
-                        heroHealth--; // И отнимаем единицу здоровья
+                        heroHealth--; 
                         HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
 
                     }
@@ -616,15 +634,21 @@ namespace Game
         private void GameOverMethod()
         {
             _mpBgr.Stop();
-            GameOver.Visibility = Visibility.Visible;
             MediaPlayer gameOverPlayer = new MediaPlayer();
             gameOverPlayer.Open(new Uri(@"sounds\gameover.mp3", UriKind.Relative));
+            Image loseImage = new Image();
+            loseImage.Source = new BitmapImage(new Uri(@"images/lose.png", UriKind.Relative));
+            loseImage.Width = 900;
+            loseImage.Height = 600;
+            loseImage.VerticalAlignment = VerticalAlignment.Top;
+            loseImage.HorizontalAlignment = HorizontalAlignment.Center;
+            loseImage.Margin = new Thickness(0, 50, 0, 0);
+            MainMenu.Children.Add(loseImage);
             gameOverPlayer.Play();
             TimerEvent();
         }
         public void TimerEvent()
         {
-            GameOver.Visibility = Visibility.Hidden;
             ResetGame();
             Game.Visibility = Visibility.Hidden;
             MainMenu.Visibility = Visibility.Visible;
@@ -649,6 +673,7 @@ namespace Game
             gameCanvas.Children.Clear();
             canvasLeft = 0;
             canvasTop = 0;
+            kingCollision = false;
         }
 
         private void StopTimers()
@@ -664,7 +689,7 @@ namespace Game
         // Используйте таймер для вызова метода стрельбы врагов по игроку
         private void StartEnemyShooting()
         {
-            enemyShootingTimer.Interval = TimeSpan.FromMilliseconds(2000); // Интервал для стрельбы врагов
+            enemyShootingTimer.Interval = TimeSpan.FromMilliseconds(2000);
             enemyShootingTimer.Tick += (sender, e) => EnemyShootAtPlayer();
             enemyShootingTimer.Start();
         }
@@ -672,18 +697,14 @@ namespace Game
 
         public static bool CheckRectangleIntersection(Rectangle rect1, Rectangle rect2)
         {
-            // Получаем границы прямоугольников
             Rect bounds1 = GetBounds(rect1);
             Rect bounds2 = GetBounds(rect2);
-
-            // Проверяем пересечение границ прямоугольников
             return bounds1.IntersectsWith(bounds2);
         }
 
         // Метод для получения границ прямоугольника Rectangle
         public static Rect GetBounds(Rectangle rectangle)
         {
-            // Используем ActualWidth и ActualHeight для определения границ
             return new Rect(Canvas.GetLeft(rectangle), Canvas.GetTop(rectangle), rectangle.ActualWidth, rectangle.ActualHeight);
         }
 
@@ -697,10 +718,9 @@ namespace Game
             for (int i = bullets.Count - 1; i >= 0; i--)
             {
                 var (bullet, direction) = bullets[i];
-                Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + 5 * direction); // Скорость полета пули, умноженная на направление
+                Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + 5 * direction);
                 bulletDistance[i] += 5;
 
-                // Удаление пули, если она преодолела расстояние 200 пикселей
                 if (Math.Abs(Canvas.GetLeft(bullet) - (GameCanvas.Margin.Left + GameCanvas.Width / 2)) >= heroMaxShootDistance 
                     || GameCanvas.Margin.Left - Canvas.GetRight(bullet) >= heroMaxShootDistance || Canvas.GetLeft(bullet) < 0 
                     || Canvas.GetLeft(bullet) > gameCanvas.ActualWidth || bulletDistance[i] >= heroMaxShootDistance)
@@ -716,12 +736,12 @@ namespace Game
                     Rect rect2 = new Rect(enemy.Margin.Left, enemy.Margin.Top, enemy.Width, enemy.Height);
                     if (rect1.IntersectsWith(rect2))
                     {
-                        // Remove bullet and enemy
+
                         gameCanvas.Children.Remove(bullet);
                         bullets.RemoveAt(i);
                         gameCanvas.Children.Remove(enemy); 
                         enemies.Remove(enemy);
-                        return; // No need to check other enemies
+                        return; 
                     }
                 }
             }
@@ -785,13 +805,13 @@ namespace Game
             gameCanvas.Children.Add(bullet);
             if (direction == 1)
             {
-                Canvas.SetLeft(bullet, GameCanvas.Margin.Left + GameCanvas.Width / 2 + hero.Width); // Начальная позиция пули по оси X
-                Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2); // Начальная позиция пули по оси Y
+                Canvas.SetLeft(bullet, GameCanvas.Margin.Left + GameCanvas.Width / 2 + hero.Width); 
+                Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2);
             }
             else
             {
-                Canvas.SetLeft(bullet, GameCanvas.Margin.Left + GameCanvas.Width / 2 - hero.Width); // Начальная позиция пули по оси X
-                Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2); // Начальная позиция пули по оси Y
+                Canvas.SetLeft(bullet, GameCanvas.Margin.Left + GameCanvas.Width / 2 - hero.Width); 
+                Canvas.SetTop(bullet, GameCanvas.Margin.Top + GameCanvas.Height / 2);
             }
             bullets.Add((bullet, direction));
             bulletDistance.Add(distance);
@@ -805,7 +825,7 @@ namespace Game
 
         private void RandomGenerationItems(int itemsCount)
         {
-            for(int  i = 0; i <= itemsCount; i++)
+            for(int  i = 0; i <= itemsCount * 2; i++)
             {
                 //Рандомная генерация предметов на карте, но не работает то, что они должны добавляться в центр комнаты
 
@@ -818,7 +838,7 @@ namespace Game
                 itemImage.Source = item;
                 itemImage.Width = 20;
                 itemImage.Height = 20;
-                itemImage.Margin = new Thickness(randomItem.Next(0, MapWidth * TileSize / 2), randomItem.Next(0, MapHeight * TileSize / 2), 0, 0);
+                itemImage.Margin = new Thickness(randomItem.Next(0, MapWidth * TileSize - 1200), randomItem.Next(0, MapHeight * TileSize - 1000 ), 0, 0);
                 itemsImages.Add((itemImage, items[index]));
                 gameCanvas.Children.Add(itemImage);
             }
@@ -839,7 +859,7 @@ namespace Game
                 gunImage.Source = gun;
                 gunImage.Width = 40;
                 gunImage.Height = 40;
-                gunImage.Margin = new Thickness(randomItem.Next(0, MapWidth * TileSize / 2), randomItem.Next(0, MapHeight * TileSize / 2), 0, 0);
+                gunImage.Margin = new Thickness(randomItem.Next(10, (MapWidth * TileSize) - 1200), randomItem.Next(10, (MapHeight * TileSize) - 1000), 0, 0);
                 gunsImages.Add((gunImage, guns[index]));
                 gameCanvas.Children.Add(gunImage);
             }
@@ -863,7 +883,18 @@ namespace Game
             InitializeBulletTimer(gameCanvas, GameCanvas, enemies);
             InitializeEnemyTimer(gameCanvas);
             StartEnemyShooting();
+            InitializeKingImage();
+        }
 
+        public void InitializeKingImage()
+        {
+            king.Source = new BitmapImage(new Uri("images/king.png", UriKind.Relative));
+            king.Width = 150;
+            king.Height = 150;
+            king.HorizontalAlignment = HorizontalAlignment.Right;
+            king.VerticalAlignment = VerticalAlignment.Bottom;
+            king.Margin = new Thickness(gameCanvas.Width - 1200, gameCanvas.Height - 1000, 0, 0);
+            gameCanvas.Children.Add(king);
         }
 
         public Image setRightGun(string gunName, Grid GameCanvas)
@@ -1297,23 +1328,33 @@ namespace Game
 
         private void MoveCharacter(int X, int Y)
         {
-            int CharacterX1 = canvasLeft + X;
-            int CharacterY1 = canvasTop + Y;
+            double CharacterX1 = canvasLeft + X;
+            double CharacterY1 = canvasTop + Y;
 
-            if (!Collision(CharacterX1, CharacterY1))
+            // Определение границ gameCanvas
+            
+
+            // Ограничение координат персонажа в пределах gameCanvas
+            
+
+
+            if (!Collision(Convert.ToInt32(CharacterX1), Convert.ToInt32(CharacterY1)))
             {
                 canvasLeft = CharacterX1;
                 canvasTop = CharacterY1;
                 if (circleGeometry != null)
                 {
-                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2  , GameCanvas.Margin.Top + GameCanvas.Height);
+                    Point heromove = new Point(GameCanvas.Margin.Left + GameCanvas.Width / 2 + Game.Margin.Left , GameCanvas.Margin.Top + GameCanvas.Height + Game.Margin.Top);
                     circleGeometry.Center = heromove;
                     lightCanvas.InvalidateVisual();
                 }
-                GameCanvas.Margin = new Thickness( canvasLeft * TileSize, canvasTop * TileSize, 0, 0);
+                GameCanvas.Margin = new Thickness(canvasLeft * TileSize , canvasTop * TileSize, 0, 0);
+                Game.Margin = new Thickness(-canvasLeft * TileSize, -canvasTop * TileSize, 0, 0);
                 CollisionWithItems();
                 CollisionWithGuns();
+                CollisionWithKing();
             }
+            
         }
 
 
@@ -1433,11 +1474,39 @@ namespace Game
             }
         }
 
+        private void CollisionWithKing()
+        {
+
+                Rect rect1 = new Rect(GameCanvas.Margin.Left, GameCanvas.Margin.Top, GameCanvas.Width, GameCanvas.Height);
+                Rect rect2 = new Rect(king.Margin.Left + 50 , king.Margin.Top + 50 , king.Width, king.Height);
+                if (rect1.IntersectsWith(rect2) && !kingCollision)
+                {
+                kingCollision = true;
+                _mpBgr.Stop();
+                string musicName = musics[random.Next(0, musics.Length)];
+                MediaPlayer kingMusicPlayer = new MediaPlayer();
+                kingMusicPlayer.Open(new Uri($"sounds/{musicName}.mp3", UriKind.Relative));
+                kingMusicPlayer.Play();
+                Image winImage = new Image();
+                winImage.Source = new BitmapImage(new Uri(@"images/win.png", UriKind.Relative));
+                winImage.Width = 900;
+                winImage.Height = 600;
+                winImage.VerticalAlignment = VerticalAlignment.Top;
+                winImage.HorizontalAlignment = HorizontalAlignment.Center;
+                winImage.Margin = new Thickness(0, 50, 0, 0);
+                MainMenu.Children.Add(winImage);
+                Game.Visibility = Visibility.Hidden;
+                MainMenu.Visibility = Visibility.Visible;
+                ResetGame();
+            }
+            
+        }
+
         private void Light()
         {
             RectangleGeometry squareGeometry = new RectangleGeometry(new Rect(-50, -50, MapWidth * TileSize + 100, MapHeight * TileSize + 100));
             
-            circleGeometry = new EllipseGeometry(new Point(50, 50), 60, 60);
+            circleGeometry = new EllipseGeometry(new Point(50, 50), 80, 80);
 
             GeometryGroup combination = new GeometryGroup();
             combination.Children.Add(squareGeometry);

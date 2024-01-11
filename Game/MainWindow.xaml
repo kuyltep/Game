@@ -1,4 +1,4 @@
-﻿<Window x:Name="Window" x:Class="Game.MainWindow"
+﻿<Window x:Name="Window"  x:Class="Game.MainWindow"
         WindowState="Maximized"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -28,10 +28,5 @@
                 <ImageBrush ImageSource="images/2.png"/>
             </Grid.Background>
         </Grid>
-        <Image x:Name="GameOver" VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="10" Visibility="Hidden">  
-            <Image.OpacityMask>
-                <ImageBrush ImageSource="/gameover.png"/>
-            </Image.OpacityMask>
-        </Image>
     </Grid>
 </Window>

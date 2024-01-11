@@ -137,12 +137,12 @@
     <Resource Include="bin\Debug\Image\Room3\Wall3_8.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\king.png" />
     <Resource Include="images\enemies\cat.png" />
     <Resource Include="images\enemies\dog.png" />
     <Resource Include="images\enemies\people.png" />
     <Resource Include="images\armor\4arm.png" />
     <Resource Include="images\heroDied.png" />
-    <Resource Include="images\gameover.png" />
     <Resource Include="gameover.png" />
     <Resource Include="images\2.png" />
     <Resource Include="images\armor\0arm.png" />
@@ -174,8 +174,16 @@
     <Resource Include="images\items\stew.png" />
     <Resource Include="images\second-punk.jpg" />
     <Resource Include="2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\sounds\durak.mp3" />
     <Content Include="bin\Debug\sounds\gameover.mp3" />
+    <Content Include="bin\Debug\sounds\jump.mp3" />
+    <Content Include="bin\Debug\sounds\kukla.mp3" />
+    <Content Include="bin\Debug\sounds\lesnik.mp3" />
     <Content Include="bin\Debug\sounds\music.mp3" />
+    <Resource Include="images\win.png" />
+    <Resource Include="images\lose.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

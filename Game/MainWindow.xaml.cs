@@ -561,74 +561,70 @@ namespace Game
         }
 
         // Создание пули врага
-        
-        private void CreateEnemyBullet(double x, double y, double playerX, double playerY)
+
+        private async void CreateEnemyBullet(double x, double y, double playerX, double playerY)
         {
             bool hasCollided = false;
             int enemyBulletDistance = 0;
+
             Rectangle bullet = new Rectangle
             {
                 Width = 10,
                 Height = 10,
-                Fill = Brushes.Blue 
+                Fill = Brushes.Blue
             };
             gameCanvas.Children.Add(bullet);
             Canvas.SetLeft(bullet, x);
             Canvas.SetTop(bullet, y);
 
-            double angle = Math.Atan2(playerY - y, playerX - x); 
+            double angle = Math.Atan2(playerY - y, playerX - x);
 
-            bulletMoveTimer.Interval = TimeSpan.FromMilliseconds(30);
-            bulletMoveTimer.Tick += (sender, e) =>
+            while (!hasCollided && enemyBulletDistance < 200)
             {
-                int speed = 1; // Скорость движения пули врага
+                int speed = 6;
 
                 double deltaX = Math.Cos(angle) * speed;
                 double deltaY = Math.Sin(angle) * speed;
 
                 Canvas.SetLeft(bullet, Canvas.GetLeft(bullet) + deltaX);
                 Canvas.SetTop(bullet, Canvas.GetTop(bullet) + deltaY);
-                enemyBullets.Add(bullet);
 
                 double bulletX = Canvas.GetLeft(bullet);
                 double bulletY = Canvas.GetTop(bullet);
                 enemyBulletDistance += speed;
 
                 // Условия остановки движения пули при выходе за пределы экрана (можно доработать)
-                if (bulletX < 0 || bulletX > gameCanvas.ActualWidth || bulletY < 0 || bulletY > gameCanvas.ActualHeight || enemyBulletDistance >= 200)
+                if (bulletX < 0 || bulletX > gameCanvas.ActualWidth || bulletY < 0 || bulletY > gameCanvas.ActualHeight)
                 {
                     gameCanvas.Children.Remove(bullet);
-                    bulletMoveTimer.Stop();
+                    return;
                 }
-
 
                 if (!hasCollided && CheckCollision(GameCanvas, bullet))
                 {
                     hasCollided = true;
-                    enemyBullets.Remove(bullet);
-                    gameCanvas.Children.Remove(bullet); 
-                                                        
+                    gameCanvas.Children.Remove(bullet);
+
+                    // Логика обработки попадания в главного героя
                     if (heroArmor > 0)
                     {
                         heroArmor--;
                         HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
-
-
                     }
-                    else if (heroArmor == 0 && heroHealth > 0)
+                    else if (heroArmor == 0 && heroHealth > 1)
                     {
-                        heroHealth--; 
+                        heroHealth--;
                         HeroHealthAndArmor(heroHealth, heroArmor, GameCanvas);
-
                     }
-                    else if (heroArmor == 0 && heroHealth == 0)
+                    else if (heroArmor == 0 && heroHealth == 1)
                     {
+                        heroHealth--;
                         GameOverMethod();
                     }
                 }
-            };
 
-            bulletMoveTimer.Start();
+                await Task.Delay(200); // Задержка для асинхронного таймера
+            }
         }
 
         private void GameOverMethod()
